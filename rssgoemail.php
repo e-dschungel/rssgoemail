@@ -66,7 +66,7 @@
 			echo "Send ".$title."<br />";
 			
 			if($send){
-				mysql_query("INSERT INTO rss2email(title,guid,description) VALUES ('$title','$guid','$desc')");
+				mysql_query("INSERT INTO rssgoemail(title,guid,description) VALUES ('$title','$guid','$desc')");
 			}
 		}else{
 			continue;
