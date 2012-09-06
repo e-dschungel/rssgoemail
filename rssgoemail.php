@@ -34,7 +34,7 @@
 	
 	$feed->set_feed_url($urls);
 	
-	$feed->enable_cache('false');
+	$feed->enable_cache();
 	$feed->set_cache_location($cachedir);
 	$feed->set_cache_duration($cachetime);
 	
