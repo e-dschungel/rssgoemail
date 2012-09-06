@@ -20,7 +20,7 @@
 
     header('Content-Type: text/html');
 	require_once(dirname(__FILE__).'/config.php');
-	require_once(dirname(__FILE__).'/simplepie.php');
+	require_once(dirname(__FILE__).'/autoloader.php');
 	
 	$connect = mysql_connect($dbhost,$dbuser,$dbpass) or die("Cannot Connect Database");
 
@@ -60,6 +60,7 @@
 		if( $row < 1){
 			
 			$mail = $desc."<br /><br /><a href=\"".$link."\" rel=\"nofollow\">Read More</a>";
+			echo $mail . "<br>";
 		
 	        $send = mail($email, $title, $mail, "From: {$title}");	
 			
