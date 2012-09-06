@@ -36,7 +36,6 @@
 	
 	$feed->enable_cache('false');
 	$feed->set_cache_location($cachedir);
-	$cachetime = (intval($cachetime) / 60); //convert from seconds to minutes
 	$feed->set_cache_duration($cachetime);
 	
 	// Init feed
