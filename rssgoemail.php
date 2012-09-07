@@ -22,21 +22,21 @@
 	require_once(dirname(__FILE__).'/config.php');
 	require_once(dirname(__FILE__).'/autoloader.php');
 	
-	$connect = mysql_connect($dbhost,$dbuser,$dbpass) or die("Cannot Connect Database");
+	$connect = mysql_connect($rge_config['dbhost'],$rge_config['dbuser'], $rge_config['dbpass']) or die("Cannot Connect Database");
 
 
-	if(!(mysql_select_db($dbbase))){
+	if(!(mysql_select_db($rge_config['dbbase']))){
 		echo "CANNOT SELECT DATABASE";
 		die();
 	}
     // Call SimplePie
 	$feed = new SimplePie();
 	
-	$feed->set_feed_url($urls);
+	$feed->set_feed_url($rge_config['feedurls']);
 	
 	$feed->enable_cache();
-	$feed->set_cache_location($cachedir);
-	$feed->set_cache_duration($cachetime);
+	$feed->set_cache_location($rge_config['cachedir']);
+	$feed->set_cache_duration($rge_config['cachetime']);
 	
 	// Init feed
 	$feed->init();
@@ -71,7 +71,7 @@
 			
 	}
 	echo "Mailtest:<br /><br />". $accumulatedText;
-	$send = mail($accumulatedText, $title, $mail, "From: {$title}");	
+	$send = mail($rge_config['email'], $title, $accumulatedText, "From: {$title}");	
         if($send){
 		foreach($accumulatedGuid as $guid){
 			mysql_query("INSERT INTO rssgoemail(guid) VALUES ('$guid')");	
