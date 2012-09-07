@@ -44,6 +44,8 @@
 	$feed->handle_content_type();
 	$items = $feed->get_items();
 	
+	$accumulatedText = '';
+		
 	foreach($items as $item){
 	
 		$title = $item->get_title();
@@ -56,20 +58,24 @@
 		$row = mysql_num_rows($query);
 	
 		// If row empty send email and happy blogging
-		if( $row < 1){
+		if( $row == 0){
 			
-			$mail = $desc."<br /><br /><a href=\"".$link."\" rel=\"nofollow\">Read More</a>";
-			echo $mail . "<br>";
-		
-	        $send = mail($email, $title, $mail, "From: {$title}");	
+			$mail = $desc."<br /><a href=\"".$link."\" rel=\"nofollow\">Read More</a>";
+
+			$accumulatedText .= $title . "<br />" . $mail . "<br /><br />" ;
+			$accumulatedGuid[] = $guid; 
 			
-			echo "Send ".$title."<br />";
-			
-			if($send){
-				mysql_query("INSERT INTO rssgoemail(title,guid,description) VALUES ('$title','$guid','$desc')");
-			}
 		}else{
 			continue;
 		}
 			
-	}?>
+	}
+	echo "Mailtest:<br /><br />". $accumulatedText;
+	print_r($accumulatedGuid);
+	$send = mail($accumulatedText, $title, $mail, "From: {$title}");	
+        if($send){
+		foreach($accumulatedGuid as $guid){
+			mysql_query("INSERT INTO rssgoemail(guid) VALUES ('$guid')");	
+		}
+	}
+?>
