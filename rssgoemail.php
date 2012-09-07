@@ -71,7 +71,6 @@
 			
 	}
 	echo "Mailtest:<br /><br />". $accumulatedText;
-	print_r($accumulatedGuid);
 	$send = mail($accumulatedText, $title, $mail, "From: {$title}");	
         if($send){
 		foreach($accumulatedGuid as $guid){
