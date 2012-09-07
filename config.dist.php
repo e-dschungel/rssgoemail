@@ -28,6 +28,8 @@ $rge_config['email']  = "email_blogging@domain.tld";
 $rge_config['cachedir'] = dirname(__FILE__)."/cache";
 $rge_config['cachetime'] = "86400";
 
+$rge_config['readmore'] = "Read More";
+
 // Add more URL(s) here.
 $rge_config['feedurls'] = array(
 	'http://example.tld/feed',

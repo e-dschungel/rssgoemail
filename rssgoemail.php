@@ -22,11 +22,11 @@
 	require_once(dirname(__FILE__).'/config.php');
 	require_once(dirname(__FILE__).'/autoloader.php');
 	
-	$connect = mysql_connect($rge_config['dbhost'],$rge_config['dbuser'], $rge_config['dbpass']) or die("Cannot Connect Database");
+	$connect = mysql_connect($rge_config['dbhost'],$rge_config['dbuser'], $rge_config['dbpass']) or die("Cannot connect to database");
 
 
 	if(!(mysql_select_db($rge_config['dbbase']))){
-		echo "CANNOT SELECT DATABASE";
+		echo "Cannot select database";
 		die();
 	}
     // Call SimplePie
@@ -60,7 +60,7 @@
 		// If row empty send email and happy blogging
 		if( $row == 0){
 			
-			$mail = $desc."<br /><a href=\"".$link."\" rel=\"nofollow\">Read More</a>";
+			$mail = $desc."<br /><a href=\"".$link."\" rel=\"nofollow\">" . $rge_config['readmore'] . "</a>";
 
 			$accumulatedText .= $title . "<br />" . $mail . "<br /><br />" ;
 			$accumulatedGuid[] = $guid; 
