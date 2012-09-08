@@ -24,7 +24,10 @@ $rge_config['dbuser'] = "";
 $rge_config['dbpass'] = "";
 $rge_config['dbbase'] = "rssgoemail";
 
-$rge_config['email']  = "email_blogging@domain.tld";
+$rge_config['emailTo']  = "email_blogging@domain.tld";
+$rge_config['emailFrom']  = "rssgoemail@domain.tld";
+$rge_config['emailSubject']  = "RSS Summary";
+
 $rge_config['cachedir'] = dirname(__FILE__)."/cache";
 $rge_config['cachetime'] = "86400";
 

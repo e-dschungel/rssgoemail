@@ -18,16 +18,15 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-    header('Content-Type: text/html');
 	require_once(dirname(__FILE__).'/config.php');
+	require_once(dirname(__FILE__).'/mail_utf8.php');
 	require_once(dirname(__FILE__).'/autoloader.php');
 	
 	$connect = mysql_connect($rge_config['dbhost'],$rge_config['dbuser'], $rge_config['dbpass']) or die("Cannot connect to database");
 
 
 	if(!(mysql_select_db($rge_config['dbbase']))){
-		echo "Cannot select database";
-		die();
+		die("Cannot select database");
 	}
     // Call SimplePie
 	$feed = new SimplePie();
@@ -45,7 +44,8 @@
 	$items = $feed->get_items();
 	
 	$accumulatedText = '';
-		
+	$accumulatedGuid = array();
+	
 	foreach($items as $item){
 	
 		$title = $item->get_title();
@@ -58,23 +58,27 @@
 		$row = mysql_num_rows($query);
 	
 		// If row empty send email and happy blogging
-		if( $row == 0){
-			
-			$mail = $desc."<br /><a href=\"".$link."\" rel=\"nofollow\">" . $rge_config['readmore'] . "</a>";
-
-			$accumulatedText .= $title . "<br />" . $mail . "<br /><br />" ;
-			$accumulatedGuid[] = $guid; 
-			
+		if( $row == 0){			
+			$text = array();
+			$text[] = "*" . $title . "*";
+			$text[] = $desc;
+			$text[] = $rge_config['readmore'] . ": " . $link;
+			$accumulatedText .= implode ("\n", $text) . "\n";
+			$accumulatedGuid[] = $guid;			
 		}else{
 			continue;
-		}
-			
+		}	
 	}
+
 	echo "Mailtest:<br /><br />". $accumulatedText;
-	$send = mail($rge_config['email'], $title, $accumulatedText, "From: {$title}");	
+
+	$send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $accumulatedText);	
         if($send){
 		foreach($accumulatedGuid as $guid){
 			mysql_query("INSERT INTO rssgoemail(guid) VALUES ('$guid')");	
 		}
+	}
+	else{
+		die("Email sending failed");	
 	}
 ?>
