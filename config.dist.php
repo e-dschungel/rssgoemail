@@ -19,22 +19,24 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-$rge_config['dbhost'] = "localhost";
-$rge_config['dbuser'] = "";
-$rge_config['dbpass'] = "";
-$rge_config['dbbase'] = "rssgoemail";
+$rge_config['dbHost'] = "localhost";
+$rge_config['dbUser'] = "";
+$rge_config['dbPass'] = "";
+$rge_config['dbBase'] = "rssgoemail";
+$rge_config['dbTable'] = "rssgoemail";
+
 
 $rge_config['emailTo']  = "email_blogging@domain.tld";
 $rge_config['emailFrom']  = "rssgoemail@domain.tld";
 $rge_config['emailSubject']  = "RSS Summary";
 
-$rge_config['cachedir'] = dirname(__FILE__)."/cache";
-$rge_config['cachetime'] = "86400";
+$rge_config['cacheDir'] = dirname(__FILE__)."/cache";
+$rge_config['cacheTime'] = "86400";
 
-$rge_config['readmore'] = "Read More";
+$rge_config['readMore'] = "Read More";
 
 // Add more URL(s) here.
-$rge_config['feedurls'] = array(
+$rge_config['feedUrls'] = array(
 	'http://example.tld/feed',
 	'http://subdomain.example.tld/feed'
 );

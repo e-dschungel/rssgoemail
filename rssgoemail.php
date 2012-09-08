@@ -22,20 +22,20 @@
 	require_once(dirname(__FILE__).'/mail_utf8.php');
 	require_once(dirname(__FILE__).'/autoloader.php');
 	
-	$connect = mysql_connect($rge_config['dbhost'],$rge_config['dbuser'], $rge_config['dbpass']) or die("Cannot connect to database");
+	$connect = mysql_connect($rge_config['dbHost'],$rge_config['dbUser'], $rge_config['dbPass']) or die("Cannot connect to database");
 
 
-	if(!(mysql_select_db($rge_config['dbbase']))){
+	if(!(mysql_select_db($rge_config['dbBase']))){
 		die("Cannot select database");
 	}
     // Call SimplePie
 	$feed = new SimplePie();
 	
-	$feed->set_feed_url($rge_config['feedurls']);
+	$feed->set_feed_url($rge_config['feedUrls']);
 	
 	$feed->enable_cache();
-	$feed->set_cache_location($rge_config['cachedir']);
-	$feed->set_cache_duration($rge_config['cachetime']);
+	$feed->set_cache_location($rge_config['cacheDir']);
+	$feed->set_cache_duration($rge_config['cacheTime']);
 	
 	// Init feed
 	$feed->init();
@@ -54,7 +54,7 @@
 		$link = $item->get_link();
 	
 		// Check Row
-		$query = mysql_query("SELECT * FROM rssgoemail WHERE guid='$guid'");
+		$query = mysql_query("SELECT * FROM " . $rge_config['dbTable'] . " WHERE guid='$guid'");
 		$row = mysql_num_rows($query);
 	
 		// If row empty send email and happy blogging
@@ -62,7 +62,7 @@
 			$text = array();
 			$text[] = "*" . $title . "*";
 			$text[] = $desc;
-			$text[] = $rge_config['readmore'] . ": " . $link;
+			$text[] = $rge_config['readMore'] . ": " . $link;
 			$accumulatedText .= implode ("\n", $text) . "\n";
 			$accumulatedGuid[] = $guid;			
 		}else{
@@ -75,7 +75,7 @@
 	$send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $accumulatedText);	
         if($send){
 		foreach($accumulatedGuid as $guid){
-			mysql_query("INSERT INTO rssgoemail(guid) VALUES ('$guid')");	
+			mysql_query("INSERT INTO " . $rge_config['dbTable'] . "(guid) VALUES ('$guid')");	
 		}
 	}
 	else{
