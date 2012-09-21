@@ -50,7 +50,7 @@
 	
 		$title = $item->get_title();
 		$guid = md5($item->get_id());
-		$desc = $item->get_description();
+		$date = $item->get_date('j.m.Y G:i');		
 		$link = $item->get_link();
 	
 		// Check Row
@@ -60,10 +60,9 @@
 		// If row empty send email and happy blogging
 		if( $row == 0){			
 			$text = array();
-			$text[] = "*" . $title . "*";
-			$text[] = $desc;
-			$text[] = $rge_config['readMore'] . ": " . $link;
-			$accumulatedText .= implode ("\n", $text) . "\n";
+			$text[] = $title . " " . $date;
+			$text[] = $link;
+			$accumulatedText .= implode ("\n", $text) . "\n\n";
 			$accumulatedGuid[] = $guid;			
 		}else{
 			continue;
@@ -71,7 +70,10 @@
 	}
 
 	echo "Mailtest:<br /><br />". $accumulatedText;
-
+	if (empty($accumulatedText)){
+			echo "Nothing to send";
+			return;
+	}
 	$send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $accumulatedText);	
         if($send){
 		foreach($accumulatedGuid as $guid){
