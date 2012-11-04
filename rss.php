@@ -15,7 +15,7 @@ header('Content-Type: application/rss+xml; charset=UTF-8');
 echo '<?xml version="1.0" encoding="UTF-8"?>';
 
 //Your configuration
-require_once('rss_config.php.inc');
+require_once('config.php');
 
 // Your path to simplepie
 include_once('autoloader.php'); // Include SimplePie
@@ -27,10 +27,10 @@ xmlns:dc="http://purl.org/dc/elements/1.1/"
 >
 
 <channel>
-<title><?php echo $config['feedtitle']; ?></title>
-<atom:link href="<?php echo $config['feedlink']; ?>" rel="self" type="application/rss+xml" />
-<link><?php echo $config['feedhome']; ?></link>
-<description><?php echo $config['feeddesc']; ?></description>
+<title><?php echo $rge_config['feedTitle']; ?></title>
+<atom:link href="<?php echo $rge_config['feedLink']; ?>" rel="self" type="application/rss+xml" />
+<link><?php echo $rge_config['feedHome']; ?></link>
+<description><?php echo $rge_config['feedDesc']; ?></description>
 <language>de-de</language>
 <copyright>Copyright <?php echo '2011-'.date("Y"); ?></copyright>
 <!--<creativeCommons:license>http://creativecommons.org/licenses/by-nc-sa/3.0/</creativeCommons:license>-->
@@ -40,9 +40,9 @@ date_default_timezone_set('Germany/Berlin');
 
 $feed = new SimplePie(); // Create a new instance of SimplePie
 // Load the feeds
-$feed->set_feed_url($config['feeds']);
-$feed->set_cache_duration($config['cachetime']); // Set the cache time
-$feed->set_cache_location($config['cachedir']); // Set the cache location
+$feed->set_feed_url($rge_config['feedUrls']);
+$feed->set_cache_duration($rge_config['cacheTime']); // Set the cache time
+$feed->set_cache_location($rge_config['cacheDir']); // Set the cache location
 //$feed->enable_xml_dump(isset($_GET['xmldump']) ? true : false);
 echo $feed->get_raw_data();
 $success = $feed->init(); // Initialize SimplePie
@@ -53,7 +53,7 @@ $feed->handle_content_type(); // Take care of the character encoding
 <?php if ($success) {
 $itemlimit=0;
 foreach($feed->get_items() as $item) {
-if ($itemlimit==$config['maxitems']) { break; }
+if ($itemlimit==$rge_config['maxItems']) { break; }
 ?>
 
 <item>
