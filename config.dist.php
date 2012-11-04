@@ -32,8 +32,15 @@ $rge_config['emailSubject']  = "RSS Summary";
 
 $rge_config['cacheDir'] = dirname(__FILE__)."/cache";
 $rge_config['cacheTime'] = "86400";
+$rge_config['timezone'] = "Europe/Berlin";
 
 $rge_config['readMore'] = "Read More";
+
+$rge_config['feedLink'] = "http://example.tld/rss.php"; // URL for this feed, <atom:link>
+$rge_config['feedTitle'] = "My Feeds"; // <title>
+$rge_config['feedHome'] = "http://example.tld"; // <link>
+$rge_config['feedDesc'] = "Feed Aggregator"; // <link>
+$rge_config['maxItems'] = 40;
 
 // Add more URL(s) here.
 $rge_config['feedUrls'] = array(
