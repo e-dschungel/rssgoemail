@@ -36,7 +36,7 @@ xmlns:dc="http://purl.org/dc/elements/1.1/"
 <!--<creativeCommons:license>http://creativecommons.org/licenses/by-nc-sa/3.0/</creativeCommons:license>-->
 
 <?php
-date_default_timezone_set('Germany/Berlin');
+date_default_timezone_set($rge_config['timezone']);
 
 $feed = new SimplePie(); // Create a new instance of SimplePie
 // Load the feeds
