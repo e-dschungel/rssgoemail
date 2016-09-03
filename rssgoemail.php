@@ -20,7 +20,7 @@
 
 	require_once(dirname(__FILE__).'/config.php');
 	require_once(dirname(__FILE__).'/mail_utf8.php');
-	require_once(dirname(__FILE__).'/autoloader.php');
+	require_once(dirname(__FILE__).'/vendor/autoload.php');
 	
 	$connect = mysql_connect($rge_config['dbHost'],$rge_config['dbUser'], $rge_config['dbPass']) or die("Cannot connect to database");
 
