@@ -18,8 +18,8 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-	require_once(dirname(__FILE__).'/config.php');
-	require_once(dirname(__FILE__).'/mail_utf8.php');
+	require_once(dirname(__FILE__).'/conf/config.php');
+	require_once(dirname(__FILE__).'/lib/mail_utf8.php');
 	require_once(dirname(__FILE__).'/vendor/autoload.php');
 	
 	$connect = mysql_connect($rge_config['dbHost'],$rge_config['dbUser'], $rge_config['dbPass']) or die("Cannot connect to database");
