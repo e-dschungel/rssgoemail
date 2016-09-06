@@ -1,5 +1,6 @@
 <?php
 /*  
+    Copyright 2012 e-dschungel https://github.com/e-dschungel
     Copyright 2009 Abdul Ibad (loopxcrack[at]yahoo.co.uk)
     http://ibad.bebasbelanja.com
 
