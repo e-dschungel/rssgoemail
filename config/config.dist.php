@@ -33,7 +33,6 @@ $rge_config['emailSubject']  = "RSS Summary";
 
 $rge_config['cacheDir'] = dirname(__FILE__)."/cache";
 $rge_config['cacheTime'] = "86400";
-$rge_config['timezone'] = "Europe/Berlin";
 
 // Add more URL(s) here.
 $rge_config['feedUrls'] = array(
