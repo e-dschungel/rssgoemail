@@ -1,4 +1,4 @@
- <?php
+<?php
 //function to send utf-8 encoded plain text mails
 function mail_utf8($to, $from, $subject = '(No subject)', $message = ''){	
 	$subject = "=?UTF-8?B?".base64_encode($subject)."?=";
