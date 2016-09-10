@@ -22,6 +22,8 @@
 	require_once(dirname(__FILE__).'/conf/config.php');
 	require_once(dirname(__FILE__).'/lib/mail_utf8.php');
 	require_once(dirname(__FILE__).'/vendor/autoload.php');
+
+	header("Content-Type: text/plain");
 	
 	$connect = mysql_connect($rge_config['dbHost'],$rge_config['dbUser'], $rge_config['dbPass']) or die("Cannot connect to database");
 
@@ -70,11 +72,13 @@
 		}	
 	}
 
-	echo "Mailtest:<br /><br />". $accumulatedText;
 	if (empty($accumulatedText)){
 			echo "Nothing to send";
 			return;
 	}
+
+	echo "The following text will be sent to " . $rge_config['emailTo'] . ":";
+
 	$send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $accumulatedText);	
         if($send){
 		foreach($accumulatedGuid as $guid){
