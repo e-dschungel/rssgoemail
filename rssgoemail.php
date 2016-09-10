@@ -31,7 +31,7 @@
 	if(!(mysql_select_db($rge_config['dbBase']))){
 		die("Cannot select database");
 	}
-    // Call SimplePie
+	// Call SimplePie
 	$feed = new SimplePie();
 	
 	$feed->set_feed_url($rge_config['feedUrls']);
@@ -56,11 +56,11 @@
 		$date = $item->get_date('j.m.Y G:i');		
 		$link = $item->get_link();
 	
-		// Check Row
+		// check if item has been sent already
 		$query = mysql_query("SELECT * FROM " . $rge_config['dbTable'] . " WHERE guid='$guid'");
 		$row = mysql_num_rows($query);
 	
-		// If row empty send email and happy blogging
+		// if not, add item to text to sent
 		if( $row == 0){			
 			$text = array();
 			$text[] = $title . " " . $date;
