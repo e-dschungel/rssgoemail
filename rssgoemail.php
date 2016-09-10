@@ -49,6 +49,12 @@
 	$accumulatedText = '';
 	$accumulatedGuid = array();
 	
+	if ($feed->error()){
+		foreach($feed->error() as $key => $error){
+			$accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+		}
+	}
+
 	foreach($items as $item){
 	
 		$title = $item->get_title();
