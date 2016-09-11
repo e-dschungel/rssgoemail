@@ -27,6 +27,7 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 |$rge_config['emailFrom']| email adress shown as sender of the digest|
 |$rge_config['emailSubject']| subject of the email digest|
 |$rge_config['errorInFeed']| warning which is shown when the feed contains errors|
+|$rge_config['dateFormat']| format of date and time, formatting specifiers like PHP's [date function](https://secure.php.net/manual/function.date.php)|
 |$rge_config['cacheDir']| cache dir, needs to be writeable|
 |$rge_config['cacheTime']| cache time in seconds|
 |$rge_config['feedUrls']| array with URLs of RSS or Atom feeds to be watched|

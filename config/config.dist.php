@@ -31,6 +31,7 @@ $rge_config['emailTo']  = "email_blogging@domain.tld";
 $rge_config['emailFrom']  = "rssgoemail@domain.tld";
 $rge_config['emailSubject']  = "RSS Summary";
 $rge_config['errorInFeed'] = "The following feed contains errors:";
+$rge_config['dateFormat'] = "m/d/y h:i a";
 
 $rge_config['cacheDir'] = dirname(__FILE__)."/../cache";
 $rge_config['cacheTime'] = "86400";

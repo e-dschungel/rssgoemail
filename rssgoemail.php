@@ -59,7 +59,7 @@
 	
 		$title = $item->get_title();
 		$guid = md5($item->get_id());
-		$date = $item->get_date('j.m.Y G:i');		
+		$date = $item->get_date($rge_config['dateFormat']);
 		$link = $item->get_link();
 	
 		// check if item has been sent already
