@@ -1,4 +1,5 @@
 RewriteEngine On
 # deny access to some locations
 RewriteRule ^/?(\.git|config|cache|lib) - [F]
+RewriteRule /?create_zip_relaese\.py$ - [F]
 RewriteRule /?(README\.md|composer\.json|composer\.lock)$ - [F]
