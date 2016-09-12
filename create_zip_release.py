@@ -10,7 +10,7 @@ import os
 COMPOSER = "composer.phar"
 REPO_URL = "https://github.com/e-dschungel/rssgoemail.git"
 ZIP_FILE_NAME = "rssgoemail.zip"
-EXCLUDE_PATTERN = ["*.git/*", "create_zip_release.py", ".gitignore"]
+EXCLUDE_PATTERN = ["*.git/*", "create_zip_release.py", "*.gitignore"]
 
 # create ZIP
 cwd = os.getcwd()
