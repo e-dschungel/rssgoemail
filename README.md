@@ -14,8 +14,9 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 * Create database using `config/rssgoemail.sql`
 * Rename `config/config.dist.php` to `config/config.php` and edit it according to your needs, see below
 * Add a cronjob which accesses `rssgoemail.php` regularly
+
 ### From ZIP file
-* Download ZIP from https://github.com/e-dschungel/rssgoemail/releases/lastest
+* Download `rssgoemail.zip` from https://github.com/e-dschungel/rssgoemail/releases/lastest
 * Extract and upload it to your webserver 
 * Create database using `config/rssgoemail.sql`
 * Rename `config/config.dist.php` to `config/config.php` and edit it according to your needs, see below
