@@ -83,7 +83,6 @@
 			return;
 	}
 
-	echo "The following text will be sent to " . $rge_config['emailTo'] . ":";
 
 	$send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $accumulatedText);	
         if($send){
