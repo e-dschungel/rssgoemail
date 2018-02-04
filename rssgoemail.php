@@ -24,24 +24,26 @@
 	require_once(dirname(__FILE__).'/vendor/autoload.php');
 
 	header("Content-Type: text/plain");
+	$charset = 'utf8mb4';
+
+	$opt = [
+    		//PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    		PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    		PDO::ATTR_EMULATE_PREPARES   => false,
+	];
+	$dsn = "mysql:host={$rge_config['dbHost']};dbname={$rge_config['dbBase']};charset=$charset";
+	$pdo = new PDO($dsn, $rge_config['dbUser'], $rge_config['dbPass'], $opt);	
 	
-	$connect = mysql_connect($rge_config['dbHost'],$rge_config['dbUser'], $rge_config['dbPass']) or die("Cannot connect to database");
-
-
-	if(!(mysql_select_db($rge_config['dbBase']))){
-		die("Cannot select database");
-	}
 	// Call SimplePie
 	$feed = new SimplePie();
-	
 	$feed->set_feed_url($rge_config['feedUrls']);
-	
 	$feed->enable_cache();
 	$feed->set_cache_location($rge_config['cacheDir']);
 	$feed->set_cache_duration($rge_config['cacheTime']);
 	
 	// Init feed
 	$feed->init();
+
 	// Make sure the page is being served with the UTF-8 headers.
 	$feed->handle_content_type();
 	$items = $feed->get_items();
@@ -63,21 +65,22 @@
 		$link = $item->get_link();
 	
 		// check if item has been sent already
-		$query = mysql_query("SELECT * FROM " . $rge_config['dbTable'] . " WHERE guid='$guid'");
-		$row = mysql_num_rows($query);
-	
-		// if not, add item to text to sent
-		if( $row == 0){			
+		$stmt = $pdo->prepare("SELECT 1 FROM {$rge_config['dbTable']} WHERE guid=:guid");
+		$stmt->execute(['guid' => $guid]); 
+		
+		// if so, skip
+		if($stmt->fetch()){			
+			continue;
+		// if not send it		
+		}else{ 
 			$text = array();
 			$text[] = $title . " " . $date;
 			$text[] = $link;
 			$accumulatedText .= implode ("\n", $text) . "\n\n";
-			$accumulatedGuid[] = $guid;			
-		}else{
-			continue;
+			$accumulatedGuid[] = $guid;
 		}	
 	}
-
+	
 	if (empty($accumulatedText)){
 			echo "Nothing to send";
 			return;
@@ -87,7 +90,8 @@
 	$send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $accumulatedText);	
         if($send){
 		foreach($accumulatedGuid as $guid){
-			mysql_query("INSERT INTO " . $rge_config['dbTable'] . "(guid) VALUES ('$guid')");	
+			$stmt = $pdo->prepare("INSERT INTO {$rge_config['dbTable']} (guid) VALUES (:guid)");
+			$stmt->execute(['guid' => $guid]); 
 		}
 	}
 	else{
