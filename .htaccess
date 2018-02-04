@@ -1,4 +1,15 @@
 RewriteEngine On
+
+#make sure errors are not displayed, only logged
+<IfModule mod_php5.c>
+php_flag    display_errors  Off
+php_flag log_errors On
+</IFModule>
+<IfModule mod_php7.c>
+php_flag    display_errors  Off
+php_flag log_errors On
+</IFModule>
+
 # deny access to some locations
 RewriteRule ^/?(\.git|config|cache|lib) - [F]
 RewriteRule /?create_zip_relaese\.py$ - [F]
