@@ -58,7 +58,7 @@
 	foreach($items as $item){
 	
 		$title = $item->get_title();
-		$guid = md5($item->get_id());
+		$guid = $item->get_id(true);
 		$date = $item->get_date($rge_config['dateFormat']);
 		$link = $item->get_link();
 	
