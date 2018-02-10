@@ -60,6 +60,12 @@
 	foreach($items as $item){
 	
 		$title = $item->get_title();
+		//decode HTML entities in title to UTF8
+		//run it two times to support double encoding, if for example "&uuml;" is encoded as "&amp;uuml;"
+		$nr_entitiy_decode_runs = 2;
+		for ($i=0; $i < $nr_entitiy_decode_runs; $i++){
+			$title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
+		}
 		$guid = $item->get_id(true);
 		$date = $item->get_date($rge_config['dateFormat']);
 		$link = $item->get_link();
