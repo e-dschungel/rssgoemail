@@ -4,25 +4,30 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "eb1fdb9463a824f58a45ec7a23f9ab33",
-    "content-hash": "af5856badc227be9618bf038aeb4a75e",
+    "content-hash": "6e099ed9c02d7defcc6ca01b6a779f35",
     "packages": [
         {
             "name": "simplepie/simplepie",
-            "version": "1.4.2",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/simplepie/simplepie.git",
-                "reference": "9b775e88ba1128fa14c69ff94ab954d86067de2a"
+                "reference": "db9fff27b6d49eed3d4047cd3211ec8dba2f5d6e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/simplepie/simplepie/zipball/9b775e88ba1128fa14c69ff94ab954d86067de2a",
-                "reference": "9b775e88ba1128fa14c69ff94ab954d86067de2a",
+                "url": "https://api.github.com/repos/simplepie/simplepie/zipball/db9fff27b6d49eed3d4047cd3211ec8dba2f5d6e",
+                "reference": "db9fff27b6d49eed3d4047cd3211ec8dba2f5d6e",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4 || ~5"
+            },
+            "suggest": {
+                "mf2/mf2": "Microformat module that allows for parsing HTML for microformats"
             },
             "type": "library",
             "autoload": {
@@ -59,7 +64,7 @@
                 "feeds",
                 "rss"
             ],
-            "time": "2016-06-14 05:48:16"
+            "time": "2017-11-12T02:03:34+00:00"
         }
     ],
     "packages-dev": [],
