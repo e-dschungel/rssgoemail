@@ -14,6 +14,6 @@ php_flag error_log log/error.log
 
 # deny access to some locations
 RewriteRule ^/?(\.git|config|cache|lib) - [F]
-RewriteRule /?create_zip_relaese\.py$ - [F]
+RewriteRule /?create_zip_release\.py$ - [F]
 RewriteRule /?(README\.md|composer\.json|composer\.lock)$ - [F]
-RewriteRule /log - [F]
+RewriteRule ^/?log/.*$ - [F,L]
