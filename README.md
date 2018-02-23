@@ -38,3 +38,13 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 |$rge_config['cacheDir']| cache dir, needs to be writeable|
 |$rge_config['cacheTime']| cache time in seconds|
 |$rge_config['feedUrls']| array with URLs of RSS or Atom feeds to be watched|
+
+## Changelog
+### Version 0.1
+* first public release (of this fork)
+
+### Version 0.2
+* upgrade to SimplePie 1.5
+* switch to PDO for database access to make script compatible to PHP 7
+* use SimplePie's internal hash functions (avoids duplicated emails)
+* fix for special characters in feed title
