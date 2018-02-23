@@ -18,6 +18,11 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+	//make sure no errors are shown even on CLI
+	ini_set('display_errors', 0);
+	ini_set('log_errors', 1);
+	ini_set('error_log', 'log/error.log');
+
 
 	require_once(dirname(__FILE__).'/config/config.php');
 	require_once(dirname(__FILE__).'/lib/mail_utf8.php');
