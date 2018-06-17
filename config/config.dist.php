@@ -34,7 +34,7 @@ $rge_config['errorInFeed'] = "The following feed contains errors:";
 $rge_config['dateFormat'] = "m/d/y h:i a";
 
 $rge_config['cacheDir'] = dirname(__FILE__)."/../cache";
-$rge_config['cacheTime'] = "86400";
+$rge_config['cacheTime'] = "1800";
 
 // Add more URL(s) here.
 $rge_config['feedUrls'] = array(

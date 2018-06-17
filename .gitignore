@@ -3,3 +3,8 @@
 config.php
 vendor
 *.zip
+log/*
+!log/error.log
+cache/*
+composer.phar
+composer-setup.php

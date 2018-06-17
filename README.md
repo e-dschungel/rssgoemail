@@ -36,7 +36,7 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 |$rge_config['errorInFeed']| warning which is shown when the feed contains errors|
 |$rge_config['dateFormat']| format of date and time, formatting specifiers like PHP's [date function](https://secure.php.net/manual/function.date.php)|
 |$rge_config['cacheDir']| cache dir, needs to be writeable|
-|$rge_config['cacheTime']| cache time in seconds|
+|$rge_config['cacheTime']| cache time in seconds, during this time no changes from feeds are recognized as the cached version is used|
 |$rge_config['feedUrls']| array with URLs of RSS or Atom feeds to be watched|
 
 ## Changelog
@@ -48,3 +48,7 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 * switch to PDO for database access to make script compatible to PHP 7
 * use SimplePie's internal hash functions (avoids duplicated emails)
 * fix for special characters in feed title
+
+### Version 0.2.1
+* decreased default cache time to 1800 seconds, improved documentation on cacheTime
+
