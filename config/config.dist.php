@@ -26,6 +26,7 @@ $rge_config['dbPass'] = "";
 $rge_config['dbBase'] = "rssgoemail";
 $rge_config['dbTable'] = "rssgoemail";
 
+$rge_config['notificationType'] = "summary";
 
 $rge_config['emailTo']  = "email_blogging@domain.tld";
 $rge_config['emailFrom']  = "rssgoemail@domain.tld";

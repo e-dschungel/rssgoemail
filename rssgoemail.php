@@ -22,14 +22,139 @@
 	ini_set('display_errors', 0);
 	ini_set('log_errors', 1);
 	ini_set('error_log', 'log/error.log');
-
+    
 
 	require_once(dirname(__FILE__).'/config/config.php');
 	require_once(dirname(__FILE__).'/lib/mail_utf8.php');
 	require_once(dirname(__FILE__).'/vendor/autoload.php');
 
+    function checkConfig($rge_config){
+        //TODO do something useful here
+    }
+
+    function decodeTitle($title){
+        //decode HTML entities in title to UTF8
+		//run it two times to support double encoding, if for example "&uuml;" is encoded as "&amp;uuml;"
+		$nr_entitiy_decode_runs = 2;
+		for ($i=0; $i < $nr_entitiy_decode_runs; $i++){
+			$title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
+		}
+        return $title;
+    }
+
+    function wasGUIDSend($rge_config, $pdo, $GUID){
+        // check if item has been sent already
+		$stmt = $pdo->prepare("SELECT 1 FROM {$rge_config['dbTable']} WHERE guid=:guid");
+		$stmt->execute(['guid' => $GUID]); 
+		
+		// if so, return true
+		if($stmt->fetch()){			
+			return true;
+		// if not false		
+		}else{ 
+            return false;
+        }
+    }
+
+    function setGUIDToSend($rge_config, $pdo, $GUID){
+			$stmt = $pdo->prepare("INSERT INTO {$rge_config['dbTable']} (guid) VALUES (:guid)");
+			$stmt->execute(['guid' => $GUID]); 
+    }
+
+    function sendMailAndHandleGUID($mail_text, $rge_config, $GUIDs){
+        $send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $mail_text);	
+            if($send){
+		    foreach(array($GUIDs) as $GUID){
+			    setGUIDToSend($pdo, $GUID);
+		    }
+	    }
+	    else{
+		    die("Email sending failed");	
+	    }        
+    }
+
+
+    function notifySummary($rge_config, $pdo, $feed){
+	
+    $items = $feed->get_items();
+	
+	$accumulatedText = '';
+	$accumulatedGuid = array();
+	
+    if ($feed->error()){
+		foreach($feed->error() as $key => $error){
+			$accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+		}
+	}
+
+	foreach($items as $item){
+	
+		$title = decodeTitle($item->get_title());
+		$guid = $item->get_id(true);
+		$date = $item->get_date($rge_config['dateFormat']);
+		$link = $item->get_link();
+		
+		// if was send before-> skip
+		if(wasGUIDSend($rge_config, $pdo, $guid)){			
+			continue;
+		// if not send it		
+		}else{ 
+			$text = array();
+			$text[] = $title . " " . $date;
+			$text[] = $link;
+			$accumulatedText .= implode ("\n", $text) . "\n\n";
+			$accumulatedGuid[] = $guid;
+		}	
+	}
+	
+	if (empty($accumulatedText)){
+			echo "Nothing to send";
+			return;
+	}
+    sendMailAndHandleGUID($accumulatedText, $rge_config, $accumulatedGuid); 
+}
+
+    function notifyPerItem($rge_config, $pdo, $feed){
+	
+    $items = $feed->get_items();
+	//TODO
+    /*if ($feed->error()){
+		foreach($feed->error() as $key => $error){
+			$accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+		}
+	}*/
+
+	foreach($items as $item){
+	
+		$title = decodeTitle($item->get_title());
+		$guid = $item->get_id(true);
+		$date = $item->get_date($rge_config['dateFormat']);
+		$link = $item->get_link();
+		
+		// if was send before-> skip
+		if(wasGUIDSend($rge_config, $pdo, $guid)){			
+			continue;
+		// if not send it		
+		}else{ 
+			$text = array();
+			$text[] = $title . " " . $date;
+			$text[] = $link;
+            $text = implode ("\n", $text);
+        	if (empty($text)){
+		        echo "Nothing to send";
+		        return;
+            }
+            sendMailAndHandleGUID($text, $rge_config, $guid);
+		}	
+	} 
+}
+
+
 	header("Content-Type: text/plain");
-	$charset = 'utf8mb4';
+    
+    checkConfig($rge_config);
+	
+    $charset = 'utf8mb4';
 
 	$opt = [
     		//PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -51,61 +176,13 @@
 
 	// Make sure the page is being served with the UTF-8 headers.
 	$feed->handle_content_type();
-	$items = $feed->get_items();
-	
-	$accumulatedText = '';
-	$accumulatedGuid = array();
-	
-	if ($feed->error()){
-		foreach($feed->error() as $key => $error){
-			$accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
-		}
-	}
+    
+    switch (strtolower($rge_config['notificationType'])){
+        case "peritem": notifyPerItem($rge_config, $pdo, $feed); break;
+        case "summary": notifySummary($rge_config, $pdo, $feed); break;
+        default: die("Invalid config entry {$rge_config['summaryType']}");
+    }
 
-	foreach($items as $item){
-	
-		$title = $item->get_title();
-		//decode HTML entities in title to UTF8
-		//run it two times to support double encoding, if for example "&uuml;" is encoded as "&amp;uuml;"
-		$nr_entitiy_decode_runs = 2;
-		for ($i=0; $i < $nr_entitiy_decode_runs; $i++){
-			$title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
-		}
-		$guid = $item->get_id(true);
-		$date = $item->get_date($rge_config['dateFormat']);
-		$link = $item->get_link();
-	
-		// check if item has been sent already
-		$stmt = $pdo->prepare("SELECT 1 FROM {$rge_config['dbTable']} WHERE guid=:guid");
-		$stmt->execute(['guid' => $guid]); 
-		
-		// if so, skip
-		if($stmt->fetch()){			
-			continue;
-		// if not send it		
-		}else{ 
-			$text = array();
-			$text[] = $title . " " . $date;
-			$text[] = $link;
-			$accumulatedText .= implode ("\n", $text) . "\n\n";
-			$accumulatedGuid[] = $guid;
-		}	
-	}
-	
-	if (empty($accumulatedText)){
-			echo "Nothing to send";
-			return;
-	}
+    return;	
 
-
-	$send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $accumulatedText);	
-        if($send){
-		foreach($accumulatedGuid as $guid){
-			$stmt = $pdo->prepare("INSERT INTO {$rge_config['dbTable']} (guid) VALUES (:guid)");
-			$stmt->execute(['guid' => $guid]); 
-		}
-	}
-	else{
-		die("Email sending failed");	
-	}
 ?>
