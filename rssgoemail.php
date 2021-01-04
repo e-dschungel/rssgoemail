@@ -61,8 +61,8 @@
 			$stmt->execute(['guid' => $GUID]); 
     }
 
-    function sendMailAndHandleGUID($mail_text, $rge_config, $GUIDs){
-        $send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubject'], $mail_text);	
+    function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $GUIDs){
+        $send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $mail_subject, $mail_text);
             if($send){
 		    foreach(array($GUIDs) as $GUID){
 			    setGUIDToSend($pdo, $GUID);
@@ -115,7 +115,7 @@
 			echo "Nothing to send";
 			return;
 	}
-    sendMailAndHandleGUID($accumulatedText, $rge_config, $accumulatedGuid); 
+    sendMailAndHandleGUID($accumulatedText, $rge_config['emailSubject'], $rge_config, $accumulatedGuid);
 }
 
     function notifyPerItem($rge_config, $pdo, $feed){
@@ -157,7 +157,8 @@
         	if (empty($text)){
 		        echo "Nothing to send for item with GUID $guid\n";
             }
-            sendMailAndHandleGUID($text, $rge_config, $guid);
+
+            sendMailAndHandleGUID($text, strtr(rge_config['emailSubject'], $replacements), $rge_config, $guid);
 		}	
 	} 
 }
