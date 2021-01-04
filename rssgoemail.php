@@ -117,14 +117,19 @@
     function notifyPerItem($rge_config, $pdo, $feed){
 	
     $items = $feed->get_items();
-	//TODO
-    /*if ($feed->error()){
-		foreach($feed->error() as $key => $error){
-			$accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
-		}
-	}*/
 
-	foreach($items as $item){
+    if ($feed->error()){
+        $mail_text = "";        
+        foreach($feed->error() as $key => $error){
+			$mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+		}
+        $send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
+	    if (!$send){
+		    die("Email sending failed");	
+	    }
+	}
+	
+    foreach($items as $item){
 	
 		$title = decodeTitle($item->get_title());
 		$guid = $item->get_id(true);
