@@ -16,7 +16,7 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 * Add a cronjob which accesses `rssgoemail.php` regularly
 
 ### From ZIP file
-* Download `rssgoemail.zip` from https://github.com/e-dschungel/rssgoemail/releases/latest
+* Download `rssgoemail.zip` (NOT `Source Code (zip)` or `Source Code (tar.gz)`)  from https://github.com/e-dschungel/rssgoemail/releases/latest
 * Extract and upload it to your webserver 
 * Create database using `config/rssgoemail.sql`
 * Rename `config/config.dist.php` to `config/config.php` and edit it according to your needs, see below
@@ -30,7 +30,7 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 |$rge_config['dbPass']| password used to connect to the database|
 |$rge_config['dbBase']| name of the database|
 |$rge_config['dbTable']| name of the table|
-|$rge_config['emailTo']| email adress of the reciepent of the email digest|
+|$rge_config['emailTo']| email adress of the recipient of the email digest, multiple recipients can be given separated by comma, e.g. $rge_config['emailTo'] = "user1@example.com, user2@example.com";|
 |$rge_config['emailFrom']| email adress shown as sender of the digest|
 |$rge_config['emailSubject']| subject of the email digest|
 |$rge_config['errorInFeed']| warning which is shown when the feed contains errors|
