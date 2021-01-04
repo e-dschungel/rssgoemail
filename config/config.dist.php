@@ -40,6 +40,13 @@ $rge_config['dateFormat'] = "m/d/y h:i a";
 $rge_config['cacheDir'] = dirname(__FILE__)."/../cache";
 $rge_config['cacheTime'] = "1800";
 
+$rge_config['smtpHost'] = "smtp.example.com";
+$rge_config['smtpAuth'] = true;
+$rge_config['smtpUsername'] = "exampleUser";
+$rge_config['smtpPassword'] = "examplePassword";
+$rge_config['smtpSecurity'] = "starttls";
+$rge_config['smtpPort'] = 465;
+
 // Add more URL(s) here.
 $rge_config['feedUrls'] = array(
 	'http://example.tld/feed',

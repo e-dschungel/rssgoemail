@@ -23,10 +23,55 @@
 	ini_set('log_errors', 1);
 	ini_set('error_log', 'log/error.log');
     
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\SMTP;
+    use PHPMailer\PHPMailer\Exception;
 
 	require_once(dirname(__FILE__).'/config/config.php');
-	require_once(dirname(__FILE__).'/lib/mail_utf8.php');
 	require_once(dirname(__FILE__).'/vendor/autoload.php');
+
+    function sendMail($rge_config, $subject, $body){
+        $mail = new PHPMailer(true);
+        try {
+            //Server settings
+            switch (strtolower($rge_config['emailBackend'])){
+                case "mail": $mail->isMail(); break;
+                case "smtp":
+                    $mail->isSMTP();
+                    $mail->Host       = $rge_config['SMTPHost'];
+                    $mail->SMTPAuth   = $rge_config['SMTPAuth'];
+                    $mail->Username   = $rge_config['SMTPUsername'];
+                    $mail->Password   = $rge_config['SMTPPassword'];
+                    switch (strtolower($rge_config['SMTPSecurity'])){
+                        case "starttls":
+                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                            break;
+                        case "smtps":
+                            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                        default:
+                            trigger_error("Invalid config entry for SMTPSecurity {$rge_config['SMTPSecurity']}", E_USER_WARNING);
+                    }
+                    $mail->Port       = $rge_config['SMTPPort'];
+                    break;
+                default: trigger_error("Invalid config entry for emailBackend {$rge_config['emailBackend']}", E_USER_WARNING);
+            }
+
+            //Recipients
+            $mail->setFrom($rge_config['emailFrom']);
+            $mail->addAddress($rge_config['emailTo']);
+
+            // Content
+            $mail->isHTML(false);
+            $mail->Subject = $subject;
+            $mail->Body    = $body;
+
+            $mail->send();
+        } catch (Exception $e) {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            return false;
+        }
+        return true;
+    }
 
     function checkConfig($rge_config){
         //TODO do something useful here
@@ -62,7 +107,7 @@
     }
 
     function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $GUIDs){
-        $send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $mail_subject, $mail_text);
+        $send = sendMail($rge_config, $mail_subject, $mail_text);
             if($send){
 		    foreach(array($GUIDs) as $GUID){
 			    setGUIDToSend($pdo, $GUID);
@@ -127,7 +172,7 @@
         foreach($feed->error() as $key => $error){
 			$mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
 		}
-        $send = mail_utf8($rge_config['emailTo'], $rge_config['emailFrom'], $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
+        $send = sendMail($rge_config, $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
 	    if (!$send){
 		    die("Email sending failed");	
 	    }
