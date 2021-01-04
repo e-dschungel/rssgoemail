@@ -7,3 +7,4 @@ log/*
 cache/*
 composer.phar
 composer-setup.php
+composer.lock
