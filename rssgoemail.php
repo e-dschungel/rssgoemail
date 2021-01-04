@@ -88,21 +88,25 @@
 	}
 
 	foreach($items as $item){
-	
 		$title = decodeTitle($item->get_title());
 		$guid = $item->get_id(true);
 		$date = $item->get_date($rge_config['dateFormat']);
 		$link = $item->get_link();
-		
+        $feed_title = $item->get_feed()->get_title();
+
+        $replacements = array(
+            "##ITEM_TITLE##" => $title,
+            "##ITEM_DATE##" => $date,
+            "##ITEM_LINK##" => $link,
+            "##FEED_TITLE##" => $feed_title,
+        );
+
 		// if was send before-> skip
 		if(wasGUIDSend($rge_config, $pdo, $guid)){			
 			continue;
 		// if not send it		
-		}else{ 
-			$text = array();
-			$text[] = $title . " " . $date;
-			$text[] = $link;
-			$accumulatedText .= implode ("\n", $text) . "\n\n";
+		}else{
+            $accumulatedText .= strtr($rge_config['emailBody'], $replacements);
 			$accumulatedGuid[] = $guid;
 		}	
 	}
@@ -135,19 +139,23 @@
 		$guid = $item->get_id(true);
 		$date = $item->get_date($rge_config['dateFormat']);
 		$link = $item->get_link();
-		
+        $feed_title = $item->get_feed()->get_title();
+
+        $replacements = array(
+            "##ITEM_TITLE##" => $title,
+            "##ITEM_DATE##" => $date,
+            "##ITEM_LINK##" => $link,
+            "##FEED_TITLE##" => $feed_title,
+        );
+
 		// if was send before-> skip
 		if(wasGUIDSend($rge_config, $pdo, $guid)){			
 			continue;
 		// if not send it		
 		}else{ 
-			$text = array();
-			$text[] = $title . " " . $date;
-			$text[] = $link;
-            $text = implode ("\n", $text);
+			$text = strtr($rge_config['emailBody'], $replacements);
         	if (empty($text)){
-		        echo "Nothing to send";
-		        return;
+		        echo "Nothing to send for item with GUID $guid\n";
             }
             sendMailAndHandleGUID($text, $rge_config, $guid);
 		}	
