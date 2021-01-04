@@ -64,6 +64,7 @@
             $mail->isHTML(false);
             $mail->Subject = $subject;
             $mail->Body    = $body;
+            $mail->CharSet = 'utf-8';
 
             $mail->send();
         } catch (Exception $e) {
