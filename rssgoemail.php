@@ -132,14 +132,14 @@
     * @param $string string with HTML coding
     * @return string in UTF8 coding
     */
-    function decodeTitle($title){
+    function decodeHTMLtoUTF($HTMLString){
         //decode HTML entities in title to UTF8
 		//run it two times to support double encoding, if for example "&uuml;" is encoded as "&amp;uuml;"
 		$nr_entitiy_decode_runs = 2;
 		for ($i=0; $i < $nr_entitiy_decode_runs; $i++){
-			$title = html_entity_decode($title, ENT_COMPAT | ENT_HTML401, "UTF-8");
+			$UTFString = html_entity_decode($HTMLString, ENT_COMPAT | ENT_HTML401, "UTF-8");
 		}
-        return $title;
+        return $UTFString;
     }
 
     /**
@@ -149,7 +149,7 @@
     * @param $GUID to check
     * @return true if sent already
     */
-    function wasGUIDSend($rge_config, $pdo, $GUID){
+    function wasGUIDSent($rge_config, $pdo, $GUID){
         // check if item has been sent already
 		$stmt = $pdo->prepare("SELECT 1 FROM {$rge_config['dbTable']} WHERE guid=:guid");
 		$stmt->execute(['guid' => $GUID]);
@@ -169,7 +169,7 @@
     * @param $pdo PDO variable
     * @param $GUID
     */
-    function setGUIDToSend($rge_config, $pdo, $GUID){
+    function setGUIDToSent($rge_config, $pdo, $GUID){
 			$stmt = $pdo->prepare("INSERT INTO {$rge_config['dbTable']} (guid) VALUES (:guid)");
 			$stmt->execute(['guid' => $GUID]);
     }
@@ -185,7 +185,7 @@
         $send = sendMail($rge_config, $mail_subject, $mail_text);
         if($send){
 		    foreach(array($GUIDs) as $GUID){
-			    setGUIDToSend($pdo, $GUID);
+			    setGUIDToSent($pdo, $GUID);
 		    }
 	    }
 	    else{
@@ -213,7 +213,7 @@
 	}
 
 	foreach($items as $item){
-		$title = decodeTitle($item->get_title());
+		$title = decodeHTMLtoUTF($item->get_title());
 		$guid = $item->get_id(true);
 		$date = $item->get_date($rge_config['dateFormat']);
 		$link = $item->get_link();
@@ -227,7 +227,7 @@
         );
 
 		// if was send before-> skip
-		if(wasGUIDSend($rge_config, $pdo, $guid)){
+		if(wasGUIDSent($rge_config, $pdo, $guid)){
 			continue;
 		// if not send it
 		}else{
@@ -280,7 +280,7 @@
         );
 
 		// if was send before-> skip
-		if(wasGUIDSend($rge_config, $pdo, $guid)){
+		if(wasGUIDSent($rge_config, $pdo, $guid)){
 			continue;
 		// if not send it
 		}else{
