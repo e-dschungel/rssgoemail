@@ -1,5 +1,5 @@
 <?php
-/*  
+/*
     Copyright 2012 e-dschungel https://github.com/e-dschungel
     Copyright 2009 Abdul Ibad (loopxcrack[at]yahoo.co.uk)
     http://ibad.bebasbelanja.com
@@ -22,7 +22,7 @@
 	ini_set('display_errors', 0);
 	ini_set('log_errors', 1);
 	ini_set('error_log', 'log/error.log');
-    
+
     use PHPMailer\PHPMailer\PHPMailer;
     use PHPMailer\PHPMailer\SMTP;
     use PHPMailer\PHPMailer\Exception;
@@ -121,42 +121,42 @@
     function wasGUIDSend($rge_config, $pdo, $GUID){
         // check if item has been sent already
 		$stmt = $pdo->prepare("SELECT 1 FROM {$rge_config['dbTable']} WHERE guid=:guid");
-		$stmt->execute(['guid' => $GUID]); 
-		
+		$stmt->execute(['guid' => $GUID]);
+
 		// if so, return true
-		if($stmt->fetch()){			
+		if($stmt->fetch()){
 			return true;
-		// if not false		
-		}else{ 
+		// if not false
+		}else{
             return false;
         }
     }
 
     function setGUIDToSend($rge_config, $pdo, $GUID){
 			$stmt = $pdo->prepare("INSERT INTO {$rge_config['dbTable']} (guid) VALUES (:guid)");
-			$stmt->execute(['guid' => $GUID]); 
+			$stmt->execute(['guid' => $GUID]);
     }
 
     function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $GUIDs){
         $send = sendMail($rge_config, $mail_subject, $mail_text);
-            if($send){
+        if($send){
 		    foreach(array($GUIDs) as $GUID){
 			    setGUIDToSend($pdo, $GUID);
 		    }
 	    }
 	    else{
-		    die("Email sending failed");	
-	    }        
+		    die("Email sending failed");
+	    }
     }
 
 
     function notifySummary($rge_config, $pdo, $feed){
-	
+
     $items = $feed->get_items();
-	
+
 	$accumulatedText = '';
 	$accumulatedGuid = array();
-	
+
     if ($feed->error()){
 		foreach($feed->error() as $key => $error){
 			$accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
@@ -178,15 +178,15 @@
         );
 
 		// if was send before-> skip
-		if(wasGUIDSend($rge_config, $pdo, $guid)){			
+		if(wasGUIDSend($rge_config, $pdo, $guid)){
 			continue;
-		// if not send it		
+		// if not send it
 		}else{
             $accumulatedText .= strtr($rge_config['emailBody'], $replacements);
 			$accumulatedGuid[] = $guid;
-		}	
+		}
 	}
-	
+
 	if (empty($accumulatedText)){
 			echo "Nothing to send";
 			return;
@@ -195,22 +195,22 @@
 }
 
     function notifyPerItem($rge_config, $pdo, $feed){
-	
+
     $items = $feed->get_items();
 
     if ($feed->error()){
-        $mail_text = "";        
+        $mail_text = "";
         foreach($feed->error() as $key => $error){
 			$mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
 		}
         $send = sendMail($rge_config, $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
 	    if (!$send){
-		    die("Email sending failed");	
+		    die("Email sending failed");
 	    }
 	}
-	
+
     foreach($items as $item){
-	
+
 		$title = decodeTitle($item->get_title());
 		$guid = $item->get_id(true);
 		$date = $item->get_date($rge_config['dateFormat']);
@@ -225,18 +225,18 @@
         );
 
 		// if was send before-> skip
-		if(wasGUIDSend($rge_config, $pdo, $guid)){			
+		if(wasGUIDSend($rge_config, $pdo, $guid)){
 			continue;
-		// if not send it		
-		}else{ 
+		// if not send it
+		}else{
 			$text = strtr($rge_config['emailBody'], $replacements);
         	if (empty($text)){
 		        echo "Nothing to send for item with GUID $guid\n";
             }
 
             sendMailAndHandleGUID($text, strtr(rge_config['emailSubject'], $replacements), $rge_config, $guid);
-		}	
-	} 
+		}
+	}
 }
 
 
@@ -252,27 +252,27 @@
     		PDO::ATTR_EMULATE_PREPARES   => false,
 	];
 	$dsn = "mysql:host={$rge_config['dbHost']};dbname={$rge_config['dbBase']};charset=$charset";
-	$pdo = new PDO($dsn, $rge_config['dbUser'], $rge_config['dbPass'], $opt);	
-	
+	$pdo = new PDO($dsn, $rge_config['dbUser'], $rge_config['dbPass'], $opt);
+
 	// Call SimplePie
 	$feed = new SimplePie();
 	$feed->set_feed_url($rge_config['feedUrls']);
 	$feed->enable_cache();
 	$feed->set_cache_location($rge_config['cacheDir']);
 	$feed->set_cache_duration($rge_config['cacheTime']);
-	
+
 	// Init feed
 	$feed->init();
 
 	// Make sure the page is being served with the UTF-8 headers.
 	$feed->handle_content_type();
-    
+
     switch (strtolower($rge_config['notificationType'])){
         case "peritem": notifyPerItem($rge_config, $pdo, $feed); break;
         case "summary": notifySummary($rge_config, $pdo, $feed); break;
         default: die("Invalid config entry {$rge_config['summaryType']}");
     }
 
-    return;	
+    return;
 
 ?>
