@@ -74,8 +74,38 @@
         return true;
     }
 
+    function array_keys_exists($array, $keys) {
+        foreach($keys as $k) {
+            if(!isset($array[$k])) {
+            return false;
+            }
+        }
+        return true;
+    }
+
     function checkConfig($rge_config){
-        //TODO do something useful here
+        $smtp_config_requirements = array("SMTPHost", "SMTPAuth", "SMTPUsername", "SMTPPassword", "SMTPSecurity", "SMTPPort");
+
+        if (!array_key_exists("emailSubjectFeedErrorPerItem", $rge_config)){
+            trigger_error("emailSubjectFeedErrorPerItem not given, setting default value!", E_USER_WARNING);
+            $rge_config['emailSubjectFeedErrorPerItem'] = "RSS Summary - Feed Error";
+        }
+
+        if (!array_key_exists("emailBody", $rge_config)){
+            trigger_error("emailBody not given, setting default value!", E_USER_WARNING);
+            $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE## \n ##ITEM_LINK## \n";
+        }
+
+        if(!array_key_exists("emailBackend", $rge_config) == "smtp"){
+            trigger_error("emailBackend not given, setting default value mail!", E_USER_WARNING);
+            $rge_config['emailBackend'] = "##ITEM_TITLE## ##ITEM_DATE## \n ##ITEM_LINK## \n";
+        }
+
+        if(strtolower($rge_config['emailBackend']) == "smtp"){
+                if (!array_keys_exists($rge_config, $smtp_config_requirements))
+                   trigger_error("Not all required SMTP variables were given!", E_USER_WARNING);
+            }
+        return $rge_config;
     }
 
     function decodeTitle($title){
@@ -211,9 +241,9 @@
 
 
 	header("Content-Type: text/plain");
-    
-    checkConfig($rge_config);
-	
+
+    $rge_config = checkConfig($rge_config);
+
     $charset = 'utf8mb4';
 
 	$opt = [
