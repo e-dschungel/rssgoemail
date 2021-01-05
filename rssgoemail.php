@@ -105,6 +105,11 @@
     function checkConfig($rge_config){
         $smtp_config_requirements = array("SMTPHost", "SMTPAuth", "SMTPUsername", "SMTPPassword", "SMTPSecurity", "SMTPPort");
 
+        if (!array_key_exists("notificationType", $rge_config)){
+            echo("notificationType not given, setting default value summary!\n");
+            $rge_config['notificationType'] = "summary";
+        }
+
         if (!array_key_exists("emailSubjectFeedErrorPerItem", $rge_config)){
             echo("emailSubjectFeedErrorPerItem not given, setting default value!\n");
             $rge_config['emailSubjectFeedErrorPerItem'] = "RSS Summary - Feed Error";
