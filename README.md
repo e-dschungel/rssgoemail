@@ -35,7 +35,7 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 |$rge_config['emailFrom']| email adress shown as sender of the digest|
 |$rge_config['emailSubject']| subject of the email digest, in perItem mode placeholders (see below) can be used|
 |$rge_config['emailSubjectFeedErrorPerItem']| subject of mail containing feed errors (only used in perItem mode)|
-|$rge_config['emailBody']| template for mail body, for placeholder see below, in summary mode this should end with an empty newline as this si repeated to create the mail text|
+|$rge_config['emailBody']| template for mail body, for placeholder see below, in summary mode this should end with an empty line as this is attached over and over to create the mail text|
 |$rge_config['emailBackend']| can be "mail" or "smtp", "mail" uses sendmail as before, "smtp" uses SMTP. If "smtp" is used all SMTP variables must be set|
 |$rge_config['errorInFeed']| warning which is shown when the feed contains errors|
 |$rge_config['dateFormat']| format of date and time, formatting specifiers like PHP's [date function](https://secure.php.net/manual/function.date.php)|
@@ -75,3 +75,4 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 * notification type can be configured: "summary" one mail for all new RSS items, or "perItem" for one mail per new RSS item
 * mail body can be customized using placeholders
 * update to latest SimplePie 1.5.6
+* migration from older versions: add new configuration variables from `config.dist.php` to your `config.php`, although sane default values will be used
