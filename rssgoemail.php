@@ -56,11 +56,11 @@
                         case "smtps":
                             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                         default:
-                            trigger_error("Invalid config entry for SMTPSecurity {$rge_config['SMTPSecurity']}", E_USER_WARNING);
+                            echo("Invalid config entry for SMTPSecurity {$rge_config['SMTPSecurity']}");
                     }
                     $mail->Port       = $rge_config['SMTPPort'];
                     break;
-                default: trigger_error("Invalid config entry for emailBackend {$rge_config['emailBackend']}", E_USER_WARNING);
+                default: echo("Invalid config entry for emailBackend {$rge_config['emailBackend']}");
             }
 
             //Recipients
@@ -106,23 +106,23 @@
         $smtp_config_requirements = array("SMTPHost", "SMTPAuth", "SMTPUsername", "SMTPPassword", "SMTPSecurity", "SMTPPort");
 
         if (!array_key_exists("emailSubjectFeedErrorPerItem", $rge_config)){
-            trigger_error("emailSubjectFeedErrorPerItem not given, setting default value!", E_USER_WARNING);
+            echo("emailSubjectFeedErrorPerItem not given, setting default value!");
             $rge_config['emailSubjectFeedErrorPerItem'] = "RSS Summary - Feed Error";
         }
 
         if (!array_key_exists("emailBody", $rge_config)){
-            trigger_error("emailBody not given, setting default value!", E_USER_WARNING);
+            echo("emailBody not given, setting default value!");
             $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE## \n ##ITEM_LINK## \n";
         }
 
         if(!array_key_exists("emailBackend", $rge_config) == "smtp"){
-            trigger_error("emailBackend not given, setting default value mail!", E_USER_WARNING);
+            echo("emailBackend not given, setting default value mail!");
             $rge_config['emailBackend'] = "##ITEM_TITLE## ##ITEM_DATE## \n ##ITEM_LINK## \n";
         }
 
         if(strtolower($rge_config['emailBackend']) == "smtp"){
                 if (!array_keys_exists($rge_config, $smtp_config_requirements))
-                   trigger_error("Not all required SMTP variables were given!", E_USER_WARNING);
+                   echo("Not all required SMTP variables were given!");
             }
         return $rge_config;
     }
