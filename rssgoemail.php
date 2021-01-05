@@ -117,7 +117,7 @@
 
         if(!array_key_exists("emailBackend", $rge_config) == "smtp"){
             echo("emailBackend not given, setting default value mail!\n");
-            $rge_config['emailBackend'] = "##ITEM_TITLE## ##ITEM_DATE## \n ##ITEM_LINK## \n";
+            $rge_config['emailBackend'] = "mail";
         }
 
         if(strtolower($rge_config['emailBackend']) == "smtp"){
