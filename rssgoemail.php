@@ -117,7 +117,10 @@
 
         if (!array_key_exists("emailBody", $rge_config)){
             echo("emailBody not given, setting default value!\n");
-            $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE## \n ##ITEM_LINK## \n";
+            $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE##
+##ITEM_LINK##
+
+";
         }
 
         if(!array_key_exists("emailBackend", $rge_config) == "smtp"){

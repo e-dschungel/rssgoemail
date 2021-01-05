@@ -1,6 +1,6 @@
 <?php
 
-/*  
+/*
     Copyright 2012 e-dschungel https://github.com/e-dschungel
     Copyright 2009 Abdul Ibad (loopxcrack[at]yahoo.co.uk)
     http://ibad.bebasbelanja.com
@@ -33,7 +33,9 @@ $rge_config['emailFrom']  = "rssgoemail@domain.tld";
 $rge_config['emailSubject']  = "RSS Summary";
 $rge_config['emailSubjectFeedErrorPerItem']  = "RSS Summary - Feed Error";
 $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE##
-##ITEM_LINK##";
+##ITEM_LINK##
+
+";
 $rge_config['emailBackend'] = "mail";
 $rge_config['errorInFeed'] = "The following feed contains errors:";
 $rge_config['dateFormat'] = "m/d/y h:i a";
