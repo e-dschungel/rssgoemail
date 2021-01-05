@@ -56,11 +56,11 @@
                         case "smtps":
                             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
                         default:
-                            echo("Invalid config entry for SMTPSecurity {$rge_config['SMTPSecurity']}");
+                            echo("Invalid config entry for SMTPSecurity {$rge_config['SMTPSecurity']}\n");
                     }
                     $mail->Port       = $rge_config['SMTPPort'];
                     break;
-                default: echo("Invalid config entry for emailBackend {$rge_config['emailBackend']}");
+                default: echo("Invalid config entry for emailBackend {$rge_config['emailBackend']}\n");
             }
 
             //Recipients
@@ -75,7 +75,7 @@
 
             $mail->send();
         } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}\n";
             return false;
         }
         return true;
@@ -106,23 +106,23 @@
         $smtp_config_requirements = array("SMTPHost", "SMTPAuth", "SMTPUsername", "SMTPPassword", "SMTPSecurity", "SMTPPort");
 
         if (!array_key_exists("emailSubjectFeedErrorPerItem", $rge_config)){
-            echo("emailSubjectFeedErrorPerItem not given, setting default value!");
+            echo("emailSubjectFeedErrorPerItem not given, setting default value!\n");
             $rge_config['emailSubjectFeedErrorPerItem'] = "RSS Summary - Feed Error";
         }
 
         if (!array_key_exists("emailBody", $rge_config)){
-            echo("emailBody not given, setting default value!");
+            echo("emailBody not given, setting default value!\n");
             $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE## \n ##ITEM_LINK## \n";
         }
 
         if(!array_key_exists("emailBackend", $rge_config) == "smtp"){
-            echo("emailBackend not given, setting default value mail!");
+            echo("emailBackend not given, setting default value mail!\n");
             $rge_config['emailBackend'] = "##ITEM_TITLE## ##ITEM_DATE## \n ##ITEM_LINK## \n";
         }
 
         if(strtolower($rge_config['emailBackend']) == "smtp"){
                 if (!array_keys_exists($rge_config, $smtp_config_requirements))
-                   echo("Not all required SMTP variables were given!");
+                   echo("Not all required SMTP variables were given!\n");
             }
         return $rge_config;
     }
@@ -237,7 +237,7 @@
 	}
 
 	if (empty($accumulatedText)){
-			echo "Nothing to send";
+			echo "Nothing to send\n";
 			return;
 	}
     sendMailAndHandleGUID($accumulatedText, $rge_config['emailSubject'], $rge_config, $accumulatedGuid);
