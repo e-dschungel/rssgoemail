@@ -30,6 +30,13 @@
 	require_once(dirname(__FILE__).'/config/config.php');
 	require_once(dirname(__FILE__).'/vendor/autoload.php');
 
+    /**
+    * sends a mail using PHPMailer
+    * @param $rge_config rssgoemail configuration
+    * @param $subject subject of the mail to send
+    * @param $body body of the mail to send
+    * @return bool true if mail was sent succesfully
+    */
     function sendMail($rge_config, $subject, $body){
         $mail = new PHPMailer(true);
         try {
@@ -74,6 +81,12 @@
         return true;
     }
 
+    /**
+    * helper function that checks if multiple keys are in array
+    * @param $array array to check
+    * @param $keys keys to check
+    * @return bool true if all keys exist in array
+    */
     function array_keys_exists($array, $keys) {
         foreach($keys as $k) {
             if(!isset($array[$k])) {
@@ -83,6 +96,12 @@
         return true;
     }
 
+
+    /**
+    * helper function to check config, print warnings, and return a config with required default values
+    * @param $rge_conig rssgoemail config
+    * @return $rge_conig rssgoemail config with default values as required
+    */
     function checkConfig($rge_config){
         $smtp_config_requirements = array("SMTPHost", "SMTPAuth", "SMTPUsername", "SMTPPassword", "SMTPSecurity", "SMTPPort");
 
@@ -108,6 +127,11 @@
         return $rge_config;
     }
 
+    /**
+    * decode from HTML to UTF8
+    * @param $string string with HTML coding
+    * @return string in UTF8 coding
+    */
     function decodeTitle($title){
         //decode HTML entities in title to UTF8
 		//run it two times to support double encoding, if for example "&uuml;" is encoded as "&amp;uuml;"
@@ -118,6 +142,13 @@
         return $title;
     }
 
+    /**
+    * checks if given GUID was sent already
+    * @param $rge_config rssgoemail config
+    * @param $pdo PDO variable
+    * @param $GUID to check
+    * @return true if sent already
+    */
     function wasGUIDSend($rge_config, $pdo, $GUID){
         // check if item has been sent already
 		$stmt = $pdo->prepare("SELECT 1 FROM {$rge_config['dbTable']} WHERE guid=:guid");
@@ -132,11 +163,24 @@
         }
     }
 
+    /**
+    * sets given GUID to state "sent already"
+    * @param $rge_config rssgoemail config
+    * @param $pdo PDO variable
+    * @param $GUID
+    */
     function setGUIDToSend($rge_config, $pdo, $GUID){
 			$stmt = $pdo->prepare("INSERT INTO {$rge_config['dbTable']} (guid) VALUES (:guid)");
 			$stmt->execute(['guid' => $GUID]);
     }
 
+    /**
+    * sends mail and handles GUIDs
+    * @param $rge_config rssgoemail config,
+    * @param $mail_text body of the mail
+    * @param $mail_subject subject of the mail
+    * @param $GUIDs can be array or single value
+    */
     function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $GUIDs){
         $send = sendMail($rge_config, $mail_subject, $mail_text);
         if($send){
@@ -149,7 +193,12 @@
 	    }
     }
 
-
+    /**
+    * sends a RSS summary with all new items in one mails, feed errors are sent as part of that mail
+    * @param $rge_config rssgoemail config,
+    * @param $pdo PDO variable
+    * @param $feed feeds to check
+    */
     function notifySummary($rge_config, $pdo, $feed){
 
     $items = $feed->get_items();
@@ -194,6 +243,12 @@
     sendMailAndHandleGUID($accumulatedText, $rge_config['emailSubject'], $rge_config, $accumulatedGuid);
 }
 
+    /**
+    * sends one email per new RSS item, all feed errors are sent as separate mail
+    * @param $rge_config rssgoemail config,
+    * @param $pdo PDO variable
+    * @param $feed feeds to check
+    */
     function notifyPerItem($rge_config, $pdo, $feed){
 
     $items = $feed->get_items();
