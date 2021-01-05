@@ -325,7 +325,7 @@
     switch (strtolower($rge_config['notificationType'])){
         case "peritem": notifyPerItem($rge_config, $pdo, $feed); break;
         case "summary": notifySummary($rge_config, $pdo, $feed); break;
-        default: die("Invalid config entry {$rge_config['summaryType']}");
+        default: die("Invalid config entry for notificationType {$rge_config['notificationType']}");
     }
 
     return;
