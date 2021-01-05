@@ -50,6 +50,8 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 |$rge_config['SMTPPort']| SMTP port|
 
 ## Placeholder
+|placeholder|description|
+|---|---|
 |##ITEM_TITLE##| title of the RSS item|
 |##ITEM_DATE##| date of the RSS item (in format given by $rge_config['dateFormat'])|
 |##ITEM_LINK##| URL of the RSS item|
