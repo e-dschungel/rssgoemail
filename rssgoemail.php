@@ -193,7 +193,7 @@
         $send = sendMail($rge_config, $mail_subject, $mail_text);
         if($send){
 		    foreach(array($GUIDs) as $GUID){
-			    setGUIDToSent($pdo, $GUID);
+			    setGUIDToSent($rge_config, $pdo, $GUID);
 		    }
 	    }
 	    else{
