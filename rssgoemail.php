@@ -187,12 +187,13 @@
     * @param $rge_config rssgoemail config,
     * @param $mail_text body of the mail
     * @param $mail_subject subject of the mail
+    * @param $pdo PDO variable
     * @param $GUIDs can be array or single value
     */
     function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GUIDs){
         $send = sendMail($rge_config, $mail_subject, $mail_text);
         if($send){
-		    foreach(array($GUIDs) as $GUID){
+		    foreach((array)$GUIDs as $GUID){
 			    setGUIDToSent($rge_config, $pdo, $GUID);
 		    }
 	    }
