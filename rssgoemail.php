@@ -189,7 +189,7 @@
     * @param $mail_subject subject of the mail
     * @param $GUIDs can be array or single value
     */
-    function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $GUIDs){
+    function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GUIDs){
         $send = sendMail($rge_config, $mail_subject, $mail_text);
         if($send){
 		    foreach(array($GUIDs) as $GUID){
@@ -248,7 +248,7 @@
 			echo "Nothing to send\n";
 			return;
 	}
-    sendMailAndHandleGUID($accumulatedText, $rge_config['emailSubject'], $rge_config, $accumulatedGuid);
+    sendMailAndHandleGUID($accumulatedText, $rge_config['emailSubject'], $rge_config, $pdo, $accumulatedGuid);
 }
 
     /**
@@ -297,7 +297,7 @@
 		        echo "Nothing to send for item with GUID $guid\n";
             }
 
-            sendMailAndHandleGUID($text, strtr(rge_config['emailSubject'], $replacements), $rge_config, $guid);
+            sendMailAndHandleGUID($text, strtr(rge_config['emailSubject'], $replacements), $rge_config, $pdo, $guid);
 		}
 	}
 }
