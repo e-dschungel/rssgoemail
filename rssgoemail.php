@@ -298,7 +298,7 @@
 		        echo "Nothing to send for item with GUID $guid\n";
             }
 
-            sendMailAndHandleGUID($text, strtr(rge_config['emailSubject'], $replacements), $rge_config, $pdo, $guid);
+            sendMailAndHandleGUID($text, strtr($rge_config['emailSubject'], $replacements), $rge_config, $pdo, $guid);
 		}
 	}
 }
