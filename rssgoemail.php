@@ -55,6 +55,7 @@
                             break;
                         case "smtps":
                             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+                            break;
                         default:
                             echo("Invalid config entry for SMTPSecurity {$rge_config['SMTPSecurity']}\n");
                     }
