@@ -47,7 +47,7 @@ $rge_config['SMTPHost'] = "smtp.example.com";
 $rge_config['SMTPAuth'] = true;
 $rge_config['SMTPUsername'] = "exampleUser";
 $rge_config['SMTPPassword'] = "examplePassword";
-$rge_config['SMTPSecurity'] = "starttls";
+$rge_config['SMTPSecurity'] = "smtps";
 $rge_config['SMTPPort'] = 465;
 
 // Add more URL(s) here.
