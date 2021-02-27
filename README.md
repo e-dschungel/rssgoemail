@@ -91,3 +91,4 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 
 ### Version 0.3.1
 * added new placeholders ##FEED_COPYRIGHT##, ##FEED_DESCRIPTION##, ##FEED_LANGUAGE##, ##FEED_LINK##, ##ITEM_AUTHOR_EMAIL##, ##ITEM_AUTHOR_LINK##, ##ITEM_AUTHOR_NAME##, ##ITEM_COPYRIGHT##, ##ITEM_CONTENT##, ##ITEM_DESCRIPTION##, ##ITEM_ENCLOSURE_LINK##
+* update to PHPMailer 6.3.0
