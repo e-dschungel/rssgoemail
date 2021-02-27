@@ -223,17 +223,25 @@
 	}
 
 	foreach($items as $item){
-		$title = decodeHTMLtoUTF($item->get_title());
-		$guid = $item->get_id(true);
-		$date = $item->get_date($rge_config['dateFormat']);
-		$link = $item->get_link();
-        $feed_title = $item->get_feed()->get_title();
+		$guid = $item->get_id(True);
 
         $replacements = array(
-            "##ITEM_TITLE##" => $title,
-            "##ITEM_DATE##" => $date,
-            "##ITEM_LINK##" => $link,
-            "##FEED_TITLE##" => $feed_title,
+            "##FEED_COPYRIGHT##" => $item->get_feed()->get_copyright(),
+            "##FEED_DATE##" => $item->get_feed()->get_date($rge_config['dateFormat']),
+            "##FEED_DESCRIPTION##" => $item->get_feed()->get_description(),
+            "##FEED_LANGUAGE##" => $item->get_feed()->get_language(),
+            "##FEED_LINK##" => $item->get_feed()->get_link(),
+            "##FEED_TITLE##" => decodeHTMLtoUTF($item->get_feed()->get_title()),
+            "##ITEM_AUTHOR_EMAIL##" => $item->get_author()->get_email(),
+            "##ITEM_AUTHOR_LINK##" => $item->get_author()->get_link(),
+            "##ITEM_AUTHOR_NAME##" => $item->get_author()->get_NAME(),
+            "##ITEM_COPYRIGHT##" => $item->get_copyright(),
+            "##ITEM_CONTENT##" => $item->get_content(false),
+            "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
+            "##ITEM_DESCRIPTION##" => $item->get_description(false),
+            "##ITEM_ENCLOSURE_LINK##" => $item->get_enclosure()->get_link(),
+            "##ITEM_LINK##" => $item->get_link(),
+            "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
         );
 
 		// if was send before-> skip
@@ -276,17 +284,25 @@
 
     foreach($items as $item){
 
-		$title = decodeHTMLtoUTF($item->get_title());
-		$guid = $item->get_id(true);
-		$date = $item->get_date($rge_config['dateFormat']);
-		$link = $item->get_link();
-        $feed_title = $item->get_feed()->get_title();
+        $guid = $item->get_id(true);
 
         $replacements = array(
-            "##ITEM_TITLE##" => $title,
-            "##ITEM_DATE##" => $date,
-            "##ITEM_LINK##" => $link,
-            "##FEED_TITLE##" => $feed_title,
+            "##FEED_COPYRIGHT##" => $item->get_feed()->get_copyright(),
+            "##FEED_DATE##" => $item->get_feed()->get_date($rge_config['dateFormat']),
+            "##FEED_DESCRIPTION##" => $item->get_feed()->get_description(),
+            "##FEED_LANGUAGE##" => $item->get_feed()->get_language(),
+            "##FEED_LINK##" => $item->get_feed()->get_link(),
+            "##FEED_TITLE##" => decodeHTMLtoUTF($item->get_feed()->get_title()),
+            "##ITEM_AUTHOR_EMAIL##" => $item->get_author()->get_email(),
+            "##ITEM_AUTHOR_LINK##" => $item->get_author()->get_link(),
+            "##ITEM_AUTHOR_NAME##" => $item->get_author()->get_NAME(),
+            "##ITEM_COPYRIGHT##" => $item->get_copyright(),
+            "##ITEM_CONTENT##" => $item->get_content(false),
+            "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
+            "##ITEM_DESCRIPTION##" => $item->get_description(false),
+            "##ITEM_ENCLOSURE_LINK##" => $item->get_enclosure()->get_link(),
+            "##ITEM_LINK##" => $item->get_link(),
+            "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
         );
 
 		// if was send before-> skip

@@ -52,10 +52,23 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 ## Placeholder
 |placeholder|description|
 |---|---|
-|##ITEM_TITLE##| title of the RSS item|
-|##ITEM_DATE##| date of the RSS item (in format given by $rge_config['dateFormat'])|
-|##ITEM_LINK##| URL of the RSS item|
+|##FEED_COPYRIGHT##  | copyright of the feed|
+|##FEED_DATE##  | date of the RSS item (in format given by $rge_config['dateFormat'])|
+|##FEED_DESCRIPTION## | description of the feed|
+|##FEED_LANGUAGE## | language of the feed|
+|##FEED_LINK## | language of the feed|
 |##FEED_TITLE##| title of the feed|
+|##ITEM_AUTHOR_EMAIL##| email address of the item author|
+|##ITEM_AUTHOR_LINK##| link to the item author|
+|##ITEM_AUTHOR_NAME##| name of the item author|
+|##ITEM_COPYRIGHT##  | copyright of the item|
+|##ITEM_CONTENT## | content of the item, does not fall back to description if not given|
+|##ITEM_DATE##| date of the RSS item (in format given by $rge_config['dateFormat'])|
+|##ITEM_DESCRIPTION## | description of the item, does not fall back to content if not given|
+|##ITEM_ENCLOSURE_LINK##| URL of the media in enclosure tag|
+|##ITEM_LINK##| URL of the RSS item|
+|##ITEM_TITLE##| title of the RSS item|
+
 
 ## Changelog
 ### Version 0.1
@@ -76,3 +89,6 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 * mail body can be customized using placeholders
 * update to latest SimplePie 1.5.6
 * migration from older versions: add new configuration variables from `config.dist.php` to your `config.php`, although sane default values will be used
+
+### Version 0.3.1
+* added new placeholders ##FEED_COPYRIGHT##, ##FEED_DATE##, ##FEED_DESCRIPTION##, ##FEED_LANGUAGE##, ##FEED_LINK##, ##ITEM_AUTHOR_EMAIL##, ##ITEM_AUTHOR_LINK##, ##ITEM_AUTHOR_NAME##, ##ITEM_COPYRIGHT##, ##ITEM_CONTENT##, ##ITEM_DESCRIPTION##, ##ITEM_ENCLOSURE_LINK##
