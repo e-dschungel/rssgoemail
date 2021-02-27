@@ -53,7 +53,6 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 |placeholder|description|
 |---|---|
 |##FEED_COPYRIGHT##  | copyright of the feed|
-|##FEED_DATE##  | date of the RSS item (in format given by $rge_config['dateFormat'])|
 |##FEED_DESCRIPTION## | description of the feed|
 |##FEED_LANGUAGE## | language of the feed|
 |##FEED_LINK## | language of the feed|
@@ -91,4 +90,4 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 * migration from older versions: add new configuration variables from `config.dist.php` to your `config.php`, although sane default values will be used
 
 ### Version 0.3.1
-* added new placeholders ##FEED_COPYRIGHT##, ##FEED_DATE##, ##FEED_DESCRIPTION##, ##FEED_LANGUAGE##, ##FEED_LINK##, ##ITEM_AUTHOR_EMAIL##, ##ITEM_AUTHOR_LINK##, ##ITEM_AUTHOR_NAME##, ##ITEM_COPYRIGHT##, ##ITEM_CONTENT##, ##ITEM_DESCRIPTION##, ##ITEM_ENCLOSURE_LINK##
+* added new placeholders ##FEED_COPYRIGHT##, ##FEED_DESCRIPTION##, ##FEED_LANGUAGE##, ##FEED_LINK##, ##ITEM_AUTHOR_EMAIL##, ##ITEM_AUTHOR_LINK##, ##ITEM_AUTHOR_NAME##, ##ITEM_COPYRIGHT##, ##ITEM_CONTENT##, ##ITEM_DESCRIPTION##, ##ITEM_ENCLOSURE_LINK##

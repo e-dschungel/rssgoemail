@@ -227,7 +227,6 @@
 
         $replacements = array(
             "##FEED_COPYRIGHT##" => $item->get_feed()->get_copyright(),
-            "##FEED_DATE##" => $item->get_feed()->get_date($rge_config['dateFormat']),
             "##FEED_DESCRIPTION##" => $item->get_feed()->get_description(),
             "##FEED_LANGUAGE##" => $item->get_feed()->get_language(),
             "##FEED_LINK##" => $item->get_feed()->get_link(),
@@ -288,7 +287,6 @@
 
         $replacements = array(
             "##FEED_COPYRIGHT##" => $item->get_feed()->get_copyright(),
-            "##FEED_DATE##" => $item->get_feed()->get_date($rge_config['dateFormat']),
             "##FEED_DESCRIPTION##" => $item->get_feed()->get_description(),
             "##FEED_LANGUAGE##" => $item->get_feed()->get_language(),
             "##FEED_LINK##" => $item->get_feed()->get_link(),
