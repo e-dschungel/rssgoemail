@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
     Copyright 2012 e-dschungel https://github.com/e-dschungel
     Copyright 2009 Abdul Ibad (loopxcrack[at]yahoo.co.uk)
     http://ibad.bebasbelanja.com
@@ -40,7 +40,7 @@ $rge_config['emailBackend'] = "mail";
 $rge_config['errorInFeed'] = "The following feed contains errors:";
 $rge_config['dateFormat'] = "m/d/y h:i a";
 
-$rge_config['cacheDir'] = dirname(__FILE__)."/../cache";
+$rge_config['cacheDir'] = dirname(__FILE__) . "/../cache";
 $rge_config['cacheTime'] = "1800";
 
 $rge_config['SMTPHost'] = "smtp.example.com";
@@ -52,7 +52,6 @@ $rge_config['SMTPPort'] = 465;
 
 // Add more URL(s) here.
 $rge_config['feedUrls'] = array(
-	'http://example.tld/feed',
-	'http://subdomain.example.tld/feed'
+    'http://example.tld/feed',
+    'http://subdomain.example.tld/feed'
 );
-?>
