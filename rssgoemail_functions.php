@@ -1,5 +1,9 @@
 <?php
 
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\SMTP;
+    use PHPMailer\PHPMailer\Exception;
+
 /**
 * Sends a mail using PHPMailer
 *
@@ -66,7 +70,7 @@ function sendMail($rge_config, $subject, $body)
 *
 * @return bool true if all keys exist in array
 */
-function arrayKeysExists($array, $keys)
+function arrayKeysExist($array, $keys)
 {
     foreach ($keys as $k) {
         if (!isset($array[$k])) {
@@ -95,17 +99,17 @@ function checkConfig($rge_config)
         "SMTPPort",
     );
 
-    if (!arrayKeyExists("notificationType", $rge_config)) {
+    if (!arrayKeysExist("notificationType", $rge_config)) {
         echo("notificationType not given, setting default value summary!\n");
         $rge_config['notificationType'] = "summary";
     }
 
-    if (!arrayKeyExists("emailSubjectFeedErrorPerItem", $rge_config)) {
+    if (!arrayKeysExist("emailSubjectFeedErrorPerItem", $rge_config)) {
         echo("emailSubjectFeedErrorPerItem not given, setting default value!\n");
         $rge_config['emailSubjectFeedErrorPerItem'] = "RSS Summary - Feed Error";
     }
 
-    if (!arrayKeyExists("emailBody", $rge_config)) {
+    if (!arrayKeysExist("emailBody", $rge_config)) {
         echo("emailBody not given, setting default value!\n");
         $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE##
 ##ITEM_LINK##
@@ -113,7 +117,7 @@ function checkConfig($rge_config)
 ";
     }
 
-    if (!arrayKeyExists("emailBackend", $rge_config) == "smtp") {
+    if (!arrayKeysExist("emailBackend", $rge_config) == "smtp") {
         echo("emailBackend not given, setting default value mail!\n");
         $rge_config['emailBackend'] = "mail";
     }

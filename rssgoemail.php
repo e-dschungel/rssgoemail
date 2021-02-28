@@ -24,13 +24,9 @@
     ini_set('log_errors', 1);
     ini_set('error_log', 'log/error.log');
 
-    use PHPMailer\PHPMailer\PHPMailer;
-    use PHPMailer\PHPMailer\SMTP;
-    use PHPMailer\PHPMailer\Exception;
-
     require_once dirname(__FILE__) . '/config/config.php';
     require_once dirname(__FILE__) . '/vendor/autoload.php';
-    require_once dirname(__FILE__) . 'rssgoemail_functions.php';
+    require_once dirname(__FILE__) . '/rssgoemail_functions.php';
 
 
     header("Content-Type: text/plain");
