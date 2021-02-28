@@ -3,5 +3,10 @@
         "simplepie/simplepie": "1.5.*",
         "phpmailer/phpmailer": "^6.2",
         "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "*",
+        "phpcompatibility/php-compatibility": "*",
+        "squizlabs/php_codesniffer": "*"
     }
 }
