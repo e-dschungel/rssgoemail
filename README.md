@@ -1,9 +1,10 @@
 # rssgoemail
 rssgoemail is a script that watches multiple RSS (or Atom) feeds and sends out an email digest if a new entry is found.
-It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebasbelanja.com
+It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebasbelanja.com.
+It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling and [PHPMailer](https://github.com/PHPMailer/PHPMailer) for email sending.
 
 ## Requirements
-* PHP > 5.3
+* PHP > 5.6
 * a MySQL database
 * a cronjob
 
