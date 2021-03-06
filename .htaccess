@@ -2,18 +2,26 @@ RewriteEngine On
 
 #make sure errors are not displayed, only logged
 <IfModule mod_php5.c>
-php_flag    display_errors  Off
+php_flag display_errors  Off
 php_flag log_errors On
 php_flag error_log log/error.log
 </IFModule>
+
 <IfModule mod_php7.c>
-php_flag    display_errors  Off
+php_flag display_errors  Off
+php_flag log_errors On
+php_flag error_log log/error.log
+</IFModule>
+
+<IfModule mod_php8.c>
+php_flag display_errors  Off
 php_flag log_errors On
 php_flag error_log log/error.log
 </IFModule>
 
 # deny access to some locations
-RewriteRule ^/?(\.git|config|cache|lib) - [F]
+RewriteRule ^/?(\.git|config|cache|src) - [F]
 RewriteRule /?create_zip_release\.py$ - [F]
-RewriteRule /?(README\.md|composer\.json|composer\.lock)$ - [F]
+RewriteRule /?check_codingstyle\.sh$ - [F]
+RewriteRule /?(README\.md|composer\.json|composer\.lock|mypear\.xml)$ - [F]
 RewriteRule ^/?log/.*$ - [F,L]
