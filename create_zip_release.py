@@ -17,7 +17,7 @@ cwd = os.getcwd()
 with tempfile.TemporaryDirectory() as tempdir:
     os.chdir(tempdir)
     subprocess.call(["git", "clone", REPO_URL, tempdir])
-    subprocess.call([COMPOSER, "install"])
+    subprocess.call([COMPOSER, "install", "--no-dev"])
     subprocess.call(["zip", "-r", ZIP_FILE_NAME, ".",
                      "-x"] + EXCLUDE_PATTERN)
     abs_zip_path = os.path.join(cwd,ZIP_FILE_NAME)
