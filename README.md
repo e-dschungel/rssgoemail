@@ -96,3 +96,6 @@ It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling and
 
 ### Version 0.3.2
 * cleanup release: no functional changes, only codingstyle improvements
+
+### Version 0.3.3
+* updated PHPMailer to 6.4.0
