@@ -70,7 +70,7 @@ function sendMail($rge_config, $subject, $body)
 *
 * @return bool true if all keys exist in array
 */
-function arrayKeysExist($array, $keys)
+function allArrayKeysExist($array, $keys)
 {
     foreach ($keys as $k) {
         if (!isset($array[$k])) {
@@ -99,17 +99,17 @@ function checkConfig($rge_config)
         "SMTPPort",
     );
 
-    if (!arrayKeysExist("notificationType", $rge_config)) {
+    if (!array_key_exists("notificationType", $rge_config)) {
         echo("notificationType not given, setting default value summary!\n");
         $rge_config['notificationType'] = "summary";
     }
 
-    if (!arrayKeysExist("emailSubjectFeedErrorPerItem", $rge_config)) {
+    if (!array_key_exists("emailSubjectFeedErrorPerItem", $rge_config)) {
         echo("emailSubjectFeedErrorPerItem not given, setting default value!\n");
         $rge_config['emailSubjectFeedErrorPerItem'] = "RSS Summary - Feed Error";
     }
 
-    if (!arrayKeysExist("emailBody", $rge_config)) {
+    if (!array_key_exists("emailBody", $rge_config)) {
         echo("emailBody not given, setting default value!\n");
         $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE##
 ##ITEM_LINK##
@@ -117,13 +117,13 @@ function checkConfig($rge_config)
 ";
     }
 
-    if (!arrayKeysExist("emailBackend", $rge_config) == "smtp") {
+    if (!array_key_exists("emailBackend", $rge_config)) {
         echo("emailBackend not given, setting default value mail!\n");
         $rge_config['emailBackend'] = "mail";
     }
 
     if (strtolower($rge_config['emailBackend']) == "smtp") {
-        if (!array_keys_exists($rge_config, $smtp_config_requirements)) {
+        if (!allArrayKeysExist($rge_config, $smtp_config_requirements)) {
             echo("Not all required SMTP variables were given!\n");
         }
     }
