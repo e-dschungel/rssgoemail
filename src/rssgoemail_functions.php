@@ -211,6 +211,36 @@ function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GU
 }
 
 /**
+* Sends mail and handles GUIDs
+*
+* @param $text which contains placeholders
+* @param $item SimpliePieItem
+*
+* @return text with placeholder replaced
+*/
+function performReplacements($rge_config, $text, $item){
+            $replacements = array(
+            "##FEED_COPYRIGHT##" => $item->get_feed()->get_copyright(),
+            "##FEED_DESCRIPTION##" => $item->get_feed()->get_description(),
+            "##FEED_LANGUAGE##" => $item->get_feed()->get_language(),
+            "##FEED_LINK##" => $item->get_feed()->get_link(),
+            "##FEED_TITLE##" => decodeHTMLtoUTF($item->get_feed()->get_title()),
+            "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
+            "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
+            "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
+            "##ITEM_COPYRIGHT##" => $item->get_copyright(),
+            "##ITEM_CONTENT##" => $item->get_content(false),
+            "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
+            "##ITEM_DESCRIPTION##" => $item->get_description(false),
+            "##ITEM_ENCLOSURE_LINK##" => $item->get_enclosure()->get_link(),
+            "##ITEM_LINK##" => $item->get_link(),
+            "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
+        );
+        return strtr($text, $replacements);
+
+}
+
+/**
 * Sends a RSS summary with all new items in one mails, feed errors are sent as part of that mail
 *
 * @param $rge_config rssgoemail config,
@@ -236,30 +266,14 @@ function notifySummary($rge_config, $pdo, $feed)
     foreach ($items as $item) {
         $guid = $item->get_id(true);
 
-        $replacements = array(
-            "##FEED_COPYRIGHT##" => $item->get_feed()->get_copyright(),
-            "##FEED_DESCRIPTION##" => $item->get_feed()->get_description(),
-            "##FEED_LANGUAGE##" => $item->get_feed()->get_language(),
-            "##FEED_LINK##" => $item->get_feed()->get_link(),
-            "##FEED_TITLE##" => decodeHTMLtoUTF($item->get_feed()->get_title()),
-            "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
-            "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
-            "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
-            "##ITEM_COPYRIGHT##" => $item->get_copyright(),
-            "##ITEM_CONTENT##" => $item->get_content(false),
-            "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
-            "##ITEM_DESCRIPTION##" => $item->get_description(false),
-            "##ITEM_ENCLOSURE_LINK##" => $item->get_enclosure()->get_link(),
-            "##ITEM_LINK##" => $item->get_link(),
-            "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
-        );
+
 
         // if was send before-> skip
         if (wasGUIDSent($rge_config, $pdo, $guid)) {
             continue;
         // if not send it
         } else {
-            $accumulatedText .= strtr($rge_config['emailBody'], $replacements);
+            $accumulatedText .=  performReplacements($rge_config, $rge_config['emailBody'], $item);
             $accumulatedGuid[] = $guid;
         }
     }
@@ -299,35 +313,17 @@ function notifyPerItem($rge_config, $pdo, $feed)
     foreach ($items as $item) {
         $guid = $item->get_id(true);
 
-        $replacements = array(
-            "##FEED_COPYRIGHT##" => $item->get_feed()->get_copyright(),
-            "##FEED_DESCRIPTION##" => $item->get_feed()->get_description(),
-            "##FEED_LANGUAGE##" => $item->get_feed()->get_language(),
-            "##FEED_LINK##" => $item->get_feed()->get_link(),
-            "##FEED_TITLE##" => decodeHTMLtoUTF($item->get_feed()->get_title()),
-            "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
-            "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
-            "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
-            "##ITEM_COPYRIGHT##" => $item->get_copyright(),
-            "##ITEM_CONTENT##" => $item->get_content(false),
-            "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
-            "##ITEM_DESCRIPTION##" => $item->get_description(false),
-            "##ITEM_ENCLOSURE_LINK##" => $item->get_enclosure()->get_link(),
-            "##ITEM_LINK##" => $item->get_link(),
-            "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
-        );
-
         // if was send before-> skip
         if (wasGUIDSent($rge_config, $pdo, $guid)) {
             continue;
         // if not send it
         } else {
-            $text = strtr($rge_config['emailBody'], $replacements);
+            $text = performReplacements($rge_config, $text, $item);
             if (empty($text)) {
                 echo "Nothing to send for item with GUID $guid\n";
             }
 
-            sendMailAndHandleGUID($text, strtr($rge_config['emailSubject'], $replacements), $rge_config, $pdo, $guid);
+            sendMailAndHandleGUID($text, performReplacements($rge_config, $rge_config['emailSubject'], $item), $rge_config, $pdo, $guid);
         }
     }
 }
