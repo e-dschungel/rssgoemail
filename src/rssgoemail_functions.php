@@ -222,11 +222,11 @@ function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GU
 function performReplacements($rge_config, $text, $item)
 {
     $replacements = array(
-        "##FEED_COPYRIGHT##" => $item->get_feed()->get_copyright(),
-        "##FEED_DESCRIPTION##" => $item->get_feed()->get_description(),
-        "##FEED_LANGUAGE##" => $item->get_feed()->get_language(),
-        "##FEED_LINK##" => $item->get_feed()->get_link(),
-        "##FEED_TITLE##" => decodeHTMLtoUTF($item->get_feed()->get_title()),
+        "##FEED_COPYRIGHT##" => ($item->get_feed()) ? $item->get_feed()->get_copyright() : "",
+        "##FEED_DESCRIPTION##" => ($item->get_feed()) ? $item->get_feed()->get_description() : "",
+        "##FEED_LANGUAGE##" => ($item->get_feed()) ? $item->get_feed()->get_language() : "",
+        "##FEED_LINK##" => ($item->get_feed()) ? $item->get_feed()->get_link() : "",
+        "##FEED_TITLE##" => decodeHTMLtoUTF(($item->get_feed()) ? $item->get_feed()->get_title() : ""),
         "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
         "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
         "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
@@ -234,7 +234,7 @@ function performReplacements($rge_config, $text, $item)
         "##ITEM_CONTENT##" => $item->get_content(false),
         "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
         "##ITEM_DESCRIPTION##" => $item->get_description(false),
-        "##ITEM_ENCLOSURE_LINK##" => $item->get_enclosure()->get_link(),
+        "##ITEM_ENCLOSURE_LINK##" => ($item->get_enclosure()) ? $item->get_enclosure()->get_link() : "",
         "##ITEM_LINK##" => $item->get_link(),
         "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
     );
