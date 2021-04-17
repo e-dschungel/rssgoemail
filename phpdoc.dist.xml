@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <files>
+        <ignore>vendor/*</ignore>
+    </files>
+    <parser>
+      <target>.phpdoc/build</target>
+    </parser>
+    <transformer>
+       <target>.phpdoc/build</target>
+    </transformer>
+</phpdoc>
