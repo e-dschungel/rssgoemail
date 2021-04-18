@@ -1,7 +1,7 @@
 #!/bin/sh
 
 PHPCS_EXEC="./vendor/bin/phpcs"
-PHPCS_IGNORE_PATHS="*/vendor/*"
+PHPCS_IGNORE_PATHS="*/vendor/*,*/.phpdoc/*"
 PHPCOMPATIBILITY_IGNORE_PATHS="*/vendor/squizlabs/*,*/vendor/PHPCompatibility/*"
 MIN_PHP_VERSION="5.6"
 
