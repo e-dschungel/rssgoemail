@@ -99,3 +99,7 @@ It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling and
 
 ### Version 0.3.3
 * updated PHPMailer to 6.4.0
+
+### Version 0.3.4
+* avoid crashes if part of placeholder (like author or enclosure) is missing
+* fixed checking of config parameters
