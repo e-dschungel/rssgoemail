@@ -115,3 +115,6 @@ It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling and
 
 ### Version 0.3.8
 * updated PHPMailer to 6.5.3
+
+### Version 0.3.9
+* updated SimplePie to 1.5.7
