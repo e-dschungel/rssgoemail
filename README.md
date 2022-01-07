@@ -118,3 +118,6 @@ It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling and
 
 ### Version 0.3.9
 * updated SimplePie to 1.5.7
+
+### Version 0.3.10
+* updated SimplePie to 1.5.8
