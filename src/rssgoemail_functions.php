@@ -319,9 +319,10 @@ function notifyPerItem($rge_config, $pdo, $feed)
             continue;
         // if not send it
         } else {
-            $text = performReplacements($rge_config, $text, $item);
-            if (empty($text)) {
+            $text = performReplacements($rge_config, $rge_config['emailBody'], $item);
+            if (strlen($text) === 0) {
                 echo "Nothing to send for item with GUID $guid\n";
+                continue;
             }
             $subject = performReplacements($rge_config, $rge_config['emailSubject'], $item);
             sendMailAndHandleGUID($text, $subject, $rge_config, $pdo, $guid);
