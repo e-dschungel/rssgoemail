@@ -124,3 +124,9 @@ It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling and
 
 ### Version 0.3.11
 * updated PHPMailer to 6.5.4
+
+### Version 0.3.12
+* use PHPStan
+* fixed errors found by PHPStan
+* fixed issue in perItem mode
+* updated PHPMailer to 6.6.0
