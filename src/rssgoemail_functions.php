@@ -211,34 +211,113 @@ function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GU
 }
 
 /**
-* Sends mail and handles GUIDs
+* Translates a string and passes it through a sprintf.
 *
-* @param $rge_config rssgoemail config
-* @param $text which contains placeholders
-* @param $item SimpliePieItem
+* @param  string   $string  The format string.
 *
-* @return text with placeholder replaced
+* @return string   The translated string
 */
-function performReplacements($rge_config, $text, $item)
+function text($string)
 {
-    $replacements = array(
-        "##FEED_COPYRIGHT##" => ($item->get_feed()) ? $item->get_feed()->get_copyright() : "",
-        "##FEED_DESCRIPTION##" => ($item->get_feed()) ? $item->get_feed()->get_description() : "",
-        "##FEED_LANGUAGE##" => ($item->get_feed()) ? $item->get_feed()->get_language() : "",
-        "##FEED_LINK##" => ($item->get_feed()) ? $item->get_feed()->get_link() : "",
-        "##FEED_TITLE##" => decodeHTMLtoUTF(($item->get_feed()) ? $item->get_feed()->get_title() : ""),
-        "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
-        "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
-        "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
-        "##ITEM_COPYRIGHT##" => $item->get_copyright(),
-        "##ITEM_CONTENT##" => $item->get_content(false),
-        "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
-        "##ITEM_DESCRIPTION##" => $item->get_description(false),
-        "##ITEM_ENCLOSURE_LINK##" => ($item->get_enclosure()) ? $item->get_enclosure()->get_link() : "",
-        "##ITEM_LINK##" => $item->get_link(),
-        "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
-    );
-    return strtr($text, $replacements);
+  require_once dirname(__FILE__) . '../tmpl/language.php';
+
+  $args = func_get_args();
+
+  // translate the string
+  $args[0] = strtr($string, $languages[LANG]);
+
+  if(count($args) > 1) {
+    // perform sprintf on string
+    return call_user_func_array('sprintf', $args);
+  }
+  else {
+    return $args[0];
+  }
+}
+
+/**
+* Insert content into template file and return inserted content
+*
+* @param  array    $rge_config  rssgoemail config
+* @param  string   $tmpl        Template to use (available: item, email)
+* @param  object   $item        SimpliePieItem
+* @param  string   $html        Items body html
+*
+* @return string   Templated content on success, false otherwise
+*/
+function performTemplating($rge_config, $tmpl, $item, $html='')
+{
+  if ($rge_config['templateType'] == 'tmpl') {
+
+    switch ($tmpl) {
+      case 'item':
+        $tmpl_file = $rge_config['itemTmpl'];
+        break;
+
+      case 'email':
+        $tmpl_file = $rge_config['emailTmpl'];
+        break;
+      
+      default:
+        $tmpl_file = false;
+        break;
+    }
+
+    if($tmpl_file == false || !file_exists($tmpl_file))
+    {
+      echo 'Template not found: '. $tmpl;
+      return false;
+    }
+
+    $content = feedReplacements($item, $rge_config['dateFormat']);
+    $content['##EMAIL_BODY##'] = $html;
+
+
+    ob_start();
+    include $tmpl_file;
+    $txt = ob_get_contents();
+    ob_end_clean();
+    
+    return $txt;
+  }
+  elseif ($rge_config['templateType'] == 'string' && !empty($tmpl)) {
+
+    return strtr($tmpl, feedReplacements($item, $rge_config['dateFormat']));
+  }
+  else {
+    echo 'Unknown template type: '. $rge_config['templateType'];
+
+    return false;
+  }
+}
+
+/**
+* Sends a RSS summary with all new items in one mails, feed errors are sent as part of that mail
+*
+* @param  object   $item        SimpliePieItem
+* @param  string   $dateFormat  Format of the date
+*
+* @return array  List with available feed content
+*/
+function feedReplacements($item, $dateFormat)
+{
+  return array(
+    "##FEED_COPYRIGHT##" => ($item->get_feed()) ? $item->get_feed()->get_copyright() : "",
+    "##FEED_DESCRIPTION##" => ($item->get_feed()) ? $item->get_feed()->get_description() : "",
+    "##FEED_LANGUAGE##" => ($item->get_feed()) ? $item->get_feed()->get_language() : "",
+    "##FEED_LINK##" => ($item->get_feed()) ? $item->get_feed()->get_link() : "",
+    "##FEED_TITLE##" => decodeHTMLtoUTF(($item->get_feed()) ? $item->get_feed()->get_title() : ""),
+    "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
+    "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
+    "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
+    "##ITEM_COPYRIGHT##" => $item->get_copyright(),
+    "##ITEM_CONTENT##" => $item->get_content(false),
+    "##ITEM_DATE##" => $item->get_date($dateFormat),
+    "##ITEM_DESCRIPTION##" => $item->get_description(false),
+    "##ITEM_ENCLOSURE_LINK##" => ($item->get_enclosure()) ? $item->get_enclosure()->get_link() : "",
+    "##ITEM_LINK##" => $item->get_link(),
+    "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
+  );
 }
 
 /**
@@ -252,38 +331,43 @@ function performReplacements($rge_config, $text, $item)
 */
 function notifySummary($rge_config, $pdo, $feed)
 {
-
     $items = $feed->get_items();
 
     $accumulatedText = '';
     $accumulatedGuid = array();
 
+    if (!$feed->error() && count($items) < 1) {
+      echo "Nothing to send\n";
+      return;
+    }
+
     if ($feed->error()) {
         foreach ($feed->error() as $key => $error) {
-            $accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+            $accumulatedText .= text('errorInFeed') . " " . $rge_config['feedUrls'][$key] . "\n";
         }
     }
 
     foreach ($items as $item) {
         $guid = $item->get_id(true);
 
-
-
         // if was send before-> skip
         if (wasGUIDSent($rge_config, $pdo, $guid)) {
             continue;
         // if not send it
         } else {
-            $accumulatedText .=  performReplacements($rge_config, $rge_config['emailBody'], $item);
+            $accumulatedText .=  performTemplating($rge_config, 'item', $item)
             $accumulatedGuid[] = $guid;
         }
     }
 
     if (empty($accumulatedText)) {
-            echo "Nothing to send\n";
-            return;
+        echo "Nothing to send\n";
+        return;
     }
-    sendMailAndHandleGUID($accumulatedText, $rge_config['emailSubject'], $rge_config, $pdo, $accumulatedGuid);
+
+    $emailText = performTemplating($rge_config, 'email', $items[0], $accumulatedText);
+
+    sendMailAndHandleGUID($emailText, $rge_config['emailSubject'], $rge_config, $pdo, $accumulatedGuid);
 }
 
 /**
@@ -297,13 +381,12 @@ function notifySummary($rge_config, $pdo, $feed)
 */
 function notifyPerItem($rge_config, $pdo, $feed)
 {
-
     $items = $feed->get_items();
 
     if ($feed->error()) {
         $mail_text = "";
         foreach ($feed->error() as $key => $error) {
-            $mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+            $mail_text .= text('errorInFeed') . " " . $rge_config['feedUrls'][$key] . "\n";
         }
         $send = sendMail($rge_config, $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
         if (!$send) {
@@ -319,7 +402,8 @@ function notifyPerItem($rge_config, $pdo, $feed)
             continue;
         // if not send it
         } else {
-            $text = performReplacements($rge_config, $rge_config['emailBody'], $item);
+            $text = performTemplating($rge_config, 'item', $item);
+            $text = performTemplating($rge_config, 'email', $item, $text);
             if (strlen($text) === 0) {
                 echo "Nothing to send for item with GUID $guid\n";
                 continue;

@@ -36,6 +36,7 @@ if (!isset($rge_config)) {
 }
 
 $rge_config = checkConfig($rge_config);
+define('LANG', $rge_config['language']);
 
 $charset = 'utf8mb4';
 
