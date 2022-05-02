@@ -46,7 +46,15 @@ function sendMail($rge_config, $subject, $body)
 
         //Recipients
         $mail->setFrom($rge_config['emailFrom']);
-        $mail->addAddress($rge_config['emailTo']);
+
+        if(defined('EMAIL_PREVIEW') && EMAIL_PREVIEW)
+        {
+          // Preview mode: send to given address
+          $mail->addAddress(EMAIL_PREVIEW);
+        } else {
+          // Normal mode
+          $mail->addAddress($rge_config['emailTo']);
+        }        
 
         // Content
         if($rge_config['templateType'] == 'tmpl') {

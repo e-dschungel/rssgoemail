@@ -28,6 +28,7 @@ $rge_config['dbTable'] = "rssgoemail";
 
 $rge_config['notificationType'] = "summary";
 $rge_config['templateType'] = "string";
+$rge_config['allowCors'] = false;
 
 $rge_config['emailTo']  = "email_blogging@domain.tld";
 $rge_config['emailFrom']  = "rssgoemail@domain.tld";
