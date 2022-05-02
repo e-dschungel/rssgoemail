@@ -214,8 +214,12 @@ function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GU
 {
     $send = sendMail($rge_config, $mail_subject, $mail_text);
     if ($send) {
-        foreach ((array)$GUIDs as $GUID) {
+        if(!defined('EMAIL_PREVIEW'))
+        {
+          // add guid to DB if we are not in preview mode
+          foreach ((array)$GUIDs as $GUID) {
             setGUIDToSent($rge_config, $pdo, $GUID);
+          }
         }
 
         return true;
@@ -418,12 +422,23 @@ function notifySummary($rge_config, $pdo, $feed)
     if(sendMailAndHandleGUID($emailText, $rge_config['emailSubject'], $rge_config, $pdo, $accumulatedGuid))
     {
       // successful
-      echo 'Email successfully sent.';
-      addLog($rge_config, 'Email successfully sent.');
+      if(defined('EMAIL_PREVIEW')) {
+        echo 'Preview email successfully sent.';
+        addLog($rge_config, 'Preview email successfully sent.');
+      } else {
+        echo 'Email successfully sent.';
+        addLog($rge_config, 'Email successfully sent.');
+      }
+      
     } else {
       // failure
-      echo 'Email sending failed.';
-      addLog($rge_config, 'Send email failed.');
+      if(defined('EMAIL_PREVIEW')) {
+        echo 'Preview email sending failed.';
+        addLog($rge_config, 'Send email failed.');
+      } else {
+        echo 'Preview email sending failed.';
+        addLog($rge_config, 'Send email failed.');
+      }
     }
 }
 
