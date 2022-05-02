@@ -44,6 +44,7 @@ $rge_config['dateFormat'] = "m/d/y h:i a";
 
 $rge_config['cacheDir'] = dirname(__FILE__) . "/../cache";
 $rge_config['cacheTime'] = "1800";
+$rge_config['logFile'] = dirname(__FILE__) . "/../log/mail.log";
 
 $rge_config['SMTPHost'] = "smtp.example.com";
 $rge_config['SMTPAuth'] = true;

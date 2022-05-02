@@ -200,7 +200,7 @@ function setGUIDToSent($rge_config, $pdo, $GUID)
 * @param $pdo PDO variable
 * @param $GUIDs unique ID, can be array or single value
 *
-* @return void
+* @return bool true on success, false otherwise
 */
 function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GUIDs)
 {
@@ -209,8 +209,11 @@ function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GU
         foreach ((array)$GUIDs as $GUID) {
             setGUIDToSent($rge_config, $pdo, $GUID);
         }
+
+        return true;
     } else {
-        die("Email sending failed");
+
+        return false;
     }
 }
 
@@ -357,24 +360,28 @@ function notifySummary($rge_config, $pdo, $feed)
     $items = $feed->get_items();
 
     $accumulatedText = '';
-    $errorMsgs = '<strong>Error messages:</strong><br/>';
+    $errorMsgs = 'Feed errors: ';
     $accumulatedGuid = array();
 
     if ($feed->error()) {
         foreach ($feed->error() as $key => $error) {
             $accumulatedText .= text('errorInFeed') . " " . $rge_config['feedUrls'][$key] . "\n";
-            $errorMsgs .= $error.'<br/>';
+            $errorMsgs .= $error.' ; ';
         }
     }
 
     if ($feed->error() && count($items) < 1) {
       echo $accumulatedText;
       echo '<br/><br/>'.$errorMsgs;
+      addLog($rge_config, $errorMsgs);
+
       return;
     }
 
     if (!$feed->error() && count($items) < 1) {
-      echo "Nothing to send\n";
+      echo 'Empty feed - Nothing to send';
+      addLog($rge_config, 'Empty feed - Nothing to send');
+
       return;
     }
 
@@ -392,13 +399,24 @@ function notifySummary($rge_config, $pdo, $feed)
     }
 
     if (empty($accumulatedText)) {
-        echo "Nothing to send\n";
+        echo 'No new feed entrys - Nothing to send';
+        addLog($rge_config, 'No new feed entrys - Nothing to send');
+
         return;
     }
 
     $emailText = performTemplating($rge_config, 'email', $items[0], $accumulatedText);
 
-    sendMailAndHandleGUID($emailText, $rge_config['emailSubject'], $rge_config, $pdo, $accumulatedGuid);
+    if(sendMailAndHandleGUID($emailText, $rge_config['emailSubject'], $rge_config, $pdo, $accumulatedGuid))
+    {
+      // successful
+      echo 'Email successfully sent.';
+      addLog($rge_config, 'Email successfully sent.');
+    } else {
+      // failure
+      echo 'Email sending failed.';
+      addLog($rge_config, 'Send email failed.');
+    }
 }
 
 /**
@@ -415,13 +433,23 @@ function notifyPerItem($rge_config, $pdo, $feed)
     $items = $feed->get_items();
 
     if ($feed->error()) {
-        $mail_text = "";
+        $mail_text = '';
+        $errorMsgs = 'Feed errors: ';
+
         foreach ($feed->error() as $key => $error) {
             $mail_text .= text('errorInFeed') . " " . $rge_config['feedUrls'][$key] . "\n";
+            $errorMsgs .= $error.' ; ';
         }
+
+        addLog($rge_config, $errorMsgs);
+
         $send = sendMail($rge_config, $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
         if (!$send) {
-            die("Email sending failed");
+            // failure
+            echo 'Email sending failed.';
+            addLog($rge_config, 'Send email failed.');
+
+            return;
         }
     }
 
@@ -437,10 +465,56 @@ function notifyPerItem($rge_config, $pdo, $feed)
             $text = performTemplating($rge_config, 'email', $item, $text);
             if (strlen($text) === 0) {
                 echo "Nothing to send for item with GUID $guid\n";
+                addLog($rge_config, 'Nothing to send for item with GUID '.$guid);
                 continue;
             }
             $subject = strtr($rge_config['emailSubject'], feedReplacements($rge_config, $item));
-            sendMailAndHandleGUID($text, $subject, $rge_config, $pdo, $guid);
+
+            if(sendMailAndHandleGUID($text, $subject, $rge_config, $pdo, $guid))
+            {
+              // successful
+              echo 'Single email successfully sent.';
+              addLog($rge_config, 'Email successfully sent.');
+            } else {
+              // failure
+              echo 'Single email sending failed.';
+              addLog($rge_config, 'Send email failed.');
+            }
         }
     }
+}
+
+/**
+* Add new line with timestemp to log-file
+*
+* @param array   $rge_config   rssgoemail config
+* @param string  $logTxt       Text to be added to log file
+*
+* @return void
+*/
+function addLog($rge_config, $logTxt)
+{
+
+  $txt = date("d-m-Y H:i:s") . " / " . $logTxt . "\n";
+
+  // Make sure that the file exists and is writable.
+  if (is_writable($rge_config['logFile'])) {
+      // We open logFile in "attachments" mode.
+      // The file pointer is at the end of the file
+      if (!$handle = fopen($rge_config['logFile'], "a")) {
+           echo 'File can not be opened: '.$rge_config['logFile'];
+           return;
+      }
+
+      // Write $txt to the open file.
+      if (!fwrite($handle, $txt)) {
+          echo 'File not writeable: '.$rge_config['logFile'];
+          return;
+      }
+
+      // Close the file.
+      fclose($handle);
+  } else {
+    echo 'File not writeable: '.$rge_config['logFile'];
+  }
 }
