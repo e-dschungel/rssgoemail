@@ -652,11 +652,11 @@
   <?php echo text('contact'); ?><br>
   <?php echo $rge_config['feedContact']; ?>
 <? endif; ?>
-<?php if($rge_config['feedUnsubscrUrls'] != ''): ?>
+<?php if($rge_config['feedUnsubscrUrl'] != ''): ?>
   <br>
   <br>
   <?php echo text('unsubscribe_lbl'); ?><br>
-  <a href="<?php echo $rge_config['feedUnsubscrUrls']; ?>"><?php echo text('unsubscribe'); ?></a>
+  <a href="<?php echo $rge_config['feedUnsubscrUrl']; ?>"><?php echo text('unsubscribe'); ?></a>
 <? endif; ?>
                         </td>
                     </tr>

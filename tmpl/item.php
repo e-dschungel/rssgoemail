@@ -46,7 +46,7 @@
                 <tbody><tr>
                     <td class="mcnCaptionRightImageContent" valign="top" align="center">
                                           
-                        {Image}
+                      <?php echo $content['##ITEM_IMAGE##']; ?>
                                             
                     </td>
                 </tr>

@@ -1,8 +1,10 @@
 <?php
 
 $languages = array(
+  "false" => false,
   "EN" => array(
     "errorInFeed" => "The following feed contains errors:",
+    "readMore" => "Read More",
     "imgAlt" => "Feed title image",
     "feedname" => "Feed name:",
     "contact" => "Email adress for contact:",
@@ -11,6 +13,7 @@ $languages = array(
   ),
   "DE" => array(
     "errorInFeed" => "Folgender Feed enthält Fehler:",
+    "readMore" => "Weiterlesen",
     "imgAlt" => "Feed-Titelbild",
     "feedname" => "Feed-Name:",
     "contact" => "Kontakt E-Mail Adresse:",
