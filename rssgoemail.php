@@ -48,7 +48,7 @@ $dsn = "mysql:host={$rge_config['dbHost']};dbname={$rge_config['dbBase']};charse
 $pdo = new PDO($dsn, $rge_config['dbUser'], $rge_config['dbPass'], $opt);
 
 // Call SimplePie
-$feed = new SimplePie();
+$feed = new \SimplePie\SimplePie();
 $feed->set_feed_url($rge_config['feedUrls']);
 $feed->enable_cache();
 $feed->set_cache_location($rge_config['cacheDir']);
