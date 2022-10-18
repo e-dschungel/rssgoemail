@@ -46,10 +46,22 @@ function sendMail($rge_config, $subject, $body)
 
         //Recipients
         $mail->setFrom($rge_config['emailFrom']);
-        $mail->addAddress($rge_config['emailTo']);
+
+        if(defined('EMAIL_PREVIEW') && EMAIL_PREVIEW)
+        {
+          // Preview mode: send to given address
+          $mail->addAddress(EMAIL_PREVIEW);
+        } else {
+          // Normal mode
+          $mail->addAddress($rge_config['emailTo']);
+        }        
 
         // Content
-        $mail->isHTML(false);
+        if($rge_config['templateType'] == 'tmpl') {
+          $mail->isHTML(true);
+        } else {
+          $mail->isHTML(false);
+        }        
         $mail->Subject = $subject;
         $mail->Body    = $body;
         $mail->CharSet = 'utf-8';
@@ -196,49 +208,154 @@ function setGUIDToSent($rge_config, $pdo, $GUID)
 * @param $pdo PDO variable
 * @param $GUIDs unique ID, can be array or single value
 *
-* @return void
+* @return bool true on success, false otherwise
 */
 function sendMailAndHandleGUID($mail_text, $mail_subject, $rge_config, $pdo, $GUIDs)
 {
     $send = sendMail($rge_config, $mail_subject, $mail_text);
     if ($send) {
-        foreach ((array)$GUIDs as $GUID) {
+        if(!defined('EMAIL_PREVIEW'))
+        {
+          // add guid to DB if we are not in preview mode
+          foreach ((array)$GUIDs as $GUID) {
             setGUIDToSent($rge_config, $pdo, $GUID);
+          }
         }
+
+        return true;
     } else {
-        die("Email sending failed");
+
+        return false;
     }
 }
 
 /**
-* Sends mail and handles GUIDs
+* Translates a string and passes it through a sprintf.
 *
-* @param $rge_config rssgoemail config
-* @param $text which contains placeholders
-* @param $item SimpliePieItem
+* @param  string   $string  The format string.
 *
-* @return text with placeholder replaced
+* @return string   The translated string
 */
-function performReplacements($rge_config, $text, $item)
+function text($string)
 {
-    $replacements = array(
-        "##FEED_COPYRIGHT##" => ($item->get_feed()) ? $item->get_feed()->get_copyright() : "",
-        "##FEED_DESCRIPTION##" => ($item->get_feed()) ? $item->get_feed()->get_description() : "",
-        "##FEED_LANGUAGE##" => ($item->get_feed()) ? $item->get_feed()->get_language() : "",
-        "##FEED_LINK##" => ($item->get_feed()) ? $item->get_feed()->get_link() : "",
-        "##FEED_TITLE##" => decodeHTMLtoUTF(($item->get_feed()) ? $item->get_feed()->get_title() : ""),
-        "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
-        "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
-        "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
-        "##ITEM_COPYRIGHT##" => $item->get_copyright(),
-        "##ITEM_CONTENT##" => $item->get_content(false),
-        "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
-        "##ITEM_DESCRIPTION##" => $item->get_description(false),
-        "##ITEM_ENCLOSURE_LINK##" => ($item->get_enclosure()) ? $item->get_enclosure()->get_link() : "",
-        "##ITEM_LINK##" => $item->get_link(),
-        "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
-    );
-    return strtr($text, $replacements);
+  include __DIR__ . '/../tmpl/language.php';
+
+  $args = func_get_args();
+
+  // translate the string
+  $args[0] = strtr($string, $languages[LANG]);
+
+  if(count($args) > 1) {
+    // perform sprintf on string
+    return call_user_func_array('sprintf', $args);
+  }
+  else {
+    return $args[0];
+  }
+}
+
+/**
+* Insert content into template file and return inserted content
+*
+* @param  array    $rge_config  rssgoemail config
+* @param  string   $tmpl        Template to use (available: item, email)
+* @param  object   $item        SimpliePieItem
+* @param  string   $html        Items body html
+*
+* @return string   Templated content on success, false otherwise
+*/
+function performTemplating($rge_config, $tmpl, $item, $html='')
+{
+  if ($rge_config['templateType'] == 'tmpl') {
+
+    switch ($tmpl) {
+      case 'item':
+        $tmpl_file = $rge_config['itemTmpl'];
+        break;
+
+      case 'email':
+        $tmpl_file = $rge_config['emailTmpl'];
+        break;
+      
+      default:
+        $tmpl_file = false;
+        break;
+    }
+
+    if($tmpl_file == false || !file_exists($tmpl_file))
+    {
+      echo 'Template not found: '. $tmpl;
+      return false;
+    }
+
+    $content = feedReplacements($rge_config, $item);
+    $content['##EMAIL_BODY##'] = $html;
+
+
+    ob_start();
+    include $tmpl_file;
+    $txt = ob_get_contents();
+    ob_end_clean();
+    
+    return $txt;
+  }
+  elseif ($rge_config['templateType'] == 'string' && !empty($tmpl)) {
+
+    return strtr($tmpl, feedReplacements($rge_config, $item));
+  }
+  else {
+    echo 'Unknown template type: '. $rge_config['templateType'];
+
+    return false;
+  }
+}
+
+/**
+* Sends a RSS summary with all new items in one mails, feed errors are sent as part of that mail
+*
+* @param  array    $rge_config  rssgoemail config
+* @param  object   $item        SimpliePieItem
+*
+* @return array  List with available feed content
+*/
+function feedReplacements($rge_config, $item)
+{
+    $tmp_content = $item->get_content(false);
+
+    if($rge_config['templateType'] == 'tmpl') {
+      // split decription and image
+      $split_pos = strpos($tmp_content,'<p>');
+      $img       = substr($tmp_content, 0, $split_pos);
+      $content   = substr($tmp_content, $split_pos);
+      $img       = str_replace('>', ' class="mcnImage" width="176">', $img);
+
+      // perform replacement
+      $content    = str_replace('Read more', text('readMore'), $content);
+      $content    = str_replace('<br>', '', $content);
+    } else {
+      $img       = '';
+      // perform replacement
+      $content   = str_replace('Read more', text('readMore'), $tmp_content);
+    }
+
+  return array(
+    "##FEED_COPYRIGHT##" => ($item->get_feed()) ? $item->get_feed()->get_copyright() : "",
+    "##FEED_DESCRIPTION##" => ($item->get_feed()) ? $item->get_feed()->get_description() : "",
+    "##FEED_LANGUAGE##" => ($item->get_feed()) ? $item->get_feed()->get_language() : "",
+    "##FEED_LINK##" => ($item->get_feed()) ? $item->get_feed()->get_link() : "",
+    "##FEED_TITLE##" => decodeHTMLtoUTF(($item->get_feed()) ? $item->get_feed()->get_title() : ""),
+    "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
+    "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
+    "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
+    "##ITEM_COPYRIGHT##" => $item->get_copyright(),
+    "##ITEM_CONTENT##" => $content,
+    "##ITEM_DATE##" => $item->get_date($rge_config['dateFormat']),
+    "##ITEM_DESCRIPTION##" => $item->get_description(false),
+    "##ITEM_IMAGE##" => $img,
+    "##ITEM_ENCLOSURE_LINK##" => ($item->get_enclosure()) ? $item->get_enclosure()->get_link() : "",
+    "##ITEM_LINK##" => $item->get_link(),
+    "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
+  );
 }
 
 /**
@@ -252,38 +369,77 @@ function performReplacements($rge_config, $text, $item)
 */
 function notifySummary($rge_config, $pdo, $feed)
 {
-
     $items = $feed->get_items();
 
     $accumulatedText = '';
+    $errorMsgs = 'Feed errors: ';
     $accumulatedGuid = array();
 
     if ($feed->error()) {
         foreach ($feed->error() as $key => $error) {
-            $accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+            $accumulatedText .= text('errorInFeed') . " " . $rge_config['feedUrls'][$key] . "\n";
+            $errorMsgs .= $error.' ; ';
         }
+    }
+
+    if ($feed->error() && count($items) < 1) {
+      echo $accumulatedText;
+      echo '<br/><br/>'.$errorMsgs;
+      addLog($rge_config, $errorMsgs);
+
+      return;
+    }
+
+    if (!$feed->error() && count($items) < 1) {
+      echo 'Empty feed - Nothing to send';
+      addLog($rge_config, 'Empty feed - Nothing to send');
+
+      return;
     }
 
     foreach ($items as $item) {
         $guid = $item->get_id(true);
-
-
 
         // if was send before-> skip
         if (wasGUIDSent($rge_config, $pdo, $guid)) {
             continue;
         // if not send it
         } else {
-            $accumulatedText .=  performReplacements($rge_config, $rge_config['emailBody'], $item);
+            $accumulatedText .=  performTemplating($rge_config, 'item', $item);
             $accumulatedGuid[] = $guid;
         }
     }
 
     if (empty($accumulatedText)) {
-            echo "Nothing to send\n";
-            return;
+        echo 'No new feed entrys - Nothing to send';
+        addLog($rge_config, 'No new feed entrys - Nothing to send');
+
+        return;
     }
-    sendMailAndHandleGUID($accumulatedText, $rge_config['emailSubject'], $rge_config, $pdo, $accumulatedGuid);
+
+    $emailText = performTemplating($rge_config, 'email', $items[0], $accumulatedText);
+
+    if(sendMailAndHandleGUID($emailText, $rge_config['emailSubject'], $rge_config, $pdo, $accumulatedGuid))
+    {
+      // successful
+      if(defined('EMAIL_PREVIEW')) {
+        echo 'Preview email successfully sent.';
+        addLog($rge_config, 'Preview email successfully sent.');
+      } else {
+        echo 'Email successfully sent.';
+        addLog($rge_config, 'Email successfully sent.');
+      }
+      
+    } else {
+      // failure
+      if(defined('EMAIL_PREVIEW')) {
+        echo 'Preview email sending failed.';
+        addLog($rge_config, 'Send email failed.');
+      } else {
+        echo 'Preview email sending failed.';
+        addLog($rge_config, 'Send email failed.');
+      }
+    }
 }
 
 /**
@@ -297,17 +453,26 @@ function notifySummary($rge_config, $pdo, $feed)
 */
 function notifyPerItem($rge_config, $pdo, $feed)
 {
-
     $items = $feed->get_items();
 
     if ($feed->error()) {
-        $mail_text = "";
+        $mail_text = '';
+        $errorMsgs = 'Feed errors: ';
+
         foreach ($feed->error() as $key => $error) {
-            $mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+            $mail_text .= text('errorInFeed') . " " . $rge_config['feedUrls'][$key] . "\n";
+            $errorMsgs .= $error.' ; ';
         }
+
+        addLog($rge_config, $errorMsgs);
+
         $send = sendMail($rge_config, $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
         if (!$send) {
-            die("Email sending failed");
+            // failure
+            echo 'Email sending failed.';
+            addLog($rge_config, 'Send email failed.');
+
+            return;
         }
     }
 
@@ -319,13 +484,60 @@ function notifyPerItem($rge_config, $pdo, $feed)
             continue;
         // if not send it
         } else {
-            $text = performReplacements($rge_config, $rge_config['emailBody'], $item);
+            $text = performTemplating($rge_config, 'item', $item);
+            $text = performTemplating($rge_config, 'email', $item, $text);
             if (strlen($text) === 0) {
                 echo "Nothing to send for item with GUID $guid\n";
+                addLog($rge_config, 'Nothing to send for item with GUID '.$guid);
                 continue;
             }
-            $subject = performReplacements($rge_config, $rge_config['emailSubject'], $item);
-            sendMailAndHandleGUID($text, $subject, $rge_config, $pdo, $guid);
+            $subject = strtr($rge_config['emailSubject'], feedReplacements($rge_config, $item));
+
+            if(sendMailAndHandleGUID($text, $subject, $rge_config, $pdo, $guid))
+            {
+              // successful
+              echo 'Single email successfully sent.';
+              addLog($rge_config, 'Email successfully sent.');
+            } else {
+              // failure
+              echo 'Single email sending failed.';
+              addLog($rge_config, 'Send email failed.');
+            }
         }
     }
+}
+
+/**
+* Add new line with timestemp to log-file
+*
+* @param array   $rge_config   rssgoemail config
+* @param string  $logTxt       Text to be added to log file
+*
+* @return void
+*/
+function addLog($rge_config, $logTxt)
+{
+
+  $txt = date("d-m-Y H:i:s") . " / " . $logTxt . "\n";
+
+  // Make sure that the file exists and is writable.
+  if (is_writable($rge_config['logFile'])) {
+      // We open logFile in "attachments" mode.
+      // The file pointer is at the end of the file
+      if (!$handle = fopen($rge_config['logFile'], "a")) {
+           echo 'File can not be opened: '.$rge_config['logFile'];
+           return;
+      }
+
+      // Write $txt to the open file.
+      if (!fwrite($handle, $txt)) {
+          echo 'File not writeable: '.$rge_config['logFile'];
+          return;
+      }
+
+      // Close the file.
+      fclose($handle);
+  } else {
+    echo 'File not writeable: '.$rge_config['logFile'];
+  }
 }

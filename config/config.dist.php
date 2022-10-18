@@ -27,6 +27,8 @@ $rge_config['dbBase'] = "rssgoemail";
 $rge_config['dbTable'] = "rssgoemail";
 
 $rge_config['notificationType'] = "summary";
+$rge_config['templateType'] = "string";
+$rge_config['allowCors'] = false;
 
 $rge_config['emailTo']  = "email_blogging@domain.tld";
 $rge_config['emailFrom']  = "rssgoemail@domain.tld";
@@ -36,12 +38,14 @@ $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE##
 ##ITEM_LINK##
 
 ";
+
 $rge_config['emailBackend'] = "mail";
 $rge_config['errorInFeed'] = "The following feed contains errors:";
 $rge_config['dateFormat'] = "m/d/y h:i a";
 
 $rge_config['cacheDir'] = dirname(__FILE__) . "/../cache";
 $rge_config['cacheTime'] = "1800";
+$rge_config['logFile'] = dirname(__FILE__) . "/../log/mail.log";
 
 $rge_config['SMTPHost'] = "smtp.example.com";
 $rge_config['SMTPAuth'] = true;
@@ -55,3 +59,23 @@ $rge_config['feedUrls'] = array(
     'http://example.tld/feed',
     'http://subdomain.example.tld/feed'
 );
+
+// The following configs are only used,
+// if templateType = tmpl
+//--------------------------------------
+
+// Language of the feed
+$rge_config['language'] = "EN";
+
+// Template paths
+$rge_config['emailTmpl'] = dirname(__FILE__) . "/../tmpl/email.php";
+$rge_config['itemTmpl'] = dirname(__FILE__) . "/../tmpl/item.php";
+
+// URL to the header image
+$rge_config['feedImg'] = 'https://via.placeholder.com/600x166.jpg';
+
+// Email adress for contact
+$rge_config['feedContact'] = 'info@example.org';
+
+// URL to the unsubscribe form
+$rge_config['feedUnsubscrUrl'] = 'http://example.tld/feed/logout';
