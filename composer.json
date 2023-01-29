@@ -2,12 +2,18 @@
     "require": {
         "simplepie/simplepie": "^1.7",
         "phpmailer/phpmailer": "^6.2",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "php": "*"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "phpcompatibility/php-compatibility": "*",
         "squizlabs/php_codesniffer": "*",
         "phpstan/phpstan": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
     }
 }
