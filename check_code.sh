@@ -3,7 +3,7 @@
 PHPCS_EXEC="./vendor/bin/phpcs"
 PHPCS_IGNORE_PATHS="*/vendor/*,*/.phpdoc/*"
 PHPCOMPATIBILITY_IGNORE_PATHS="*/vendor/squizlabs/*,*/vendor/PHPCompatibility/*"
-MIN_PHP_VERSION="5.6"
+MIN_PHP_VERSION="7.2"
 PHPSTAN_EXEC="./vendor/bin/phpstan"
 PHPSTAN_FILES_AND_DIRS="rssgoemail.php src"
 PHPSTAN_LEVEL="1"
