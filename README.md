@@ -145,3 +145,8 @@ It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling, [P
 * update PHPMailer to 6.8.0
 * update Symfony/Cache to 5.4.21
 * update dev dependencies
+
+### Version 0.4.2
+* update PHPMailer to 6.8.1
+* update Symfony/Cache to 5.4.28
+* update dev dependencies
