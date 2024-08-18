@@ -4,7 +4,7 @@ It is a fork of the script by Abdul Ibad which used to live at http://ibad.bebas
 It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling, [PHPMailer](https://github.com/PHPMailer/PHPMailer) for email sending and [Symfony/Cache](https://symfony.com/doc/current/components/cache.html) for caching.
 
 ## Requirements
-* PHP > 8.1
+* PHP >= 8.1
 * a MySQL database
 * a cronjob
 
