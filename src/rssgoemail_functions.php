@@ -49,7 +49,7 @@ function sendMail($rge_config, $subject, $body)
         $mail->addAddress($rge_config['emailTo']);
 
         // Content
-        $mail->isHTML(false);
+        $mail->isHTML($rge_config['emailHTML']);
         $mail->Subject = $subject;
         $mail->Body    = $body;
         $mail->CharSet = 'utf-8';

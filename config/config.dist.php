@@ -37,6 +37,7 @@ $rge_config['emailBody'] = "##ITEM_TITLE## ##ITEM_DATE##
 
 ";
 $rge_config['emailBackend'] = "mail";
+$rge_config['emailHTML'] = false;
 $rge_config['errorInFeed'] = "The following feed contains errors:";
 $rge_config['dateFormat'] = "m/d/y h:i a";
 
