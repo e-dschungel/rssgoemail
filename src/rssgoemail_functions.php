@@ -267,7 +267,7 @@ function notifySummary($rge_config, $pdo, $feed)
 
     if ($feed->error()) {
         foreach ($feed->error() as $key => $error) {
-            $accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+            $accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . ": " . $error . "\n";
         }
     }
 
@@ -310,7 +310,7 @@ function notifyPerItem($rge_config, $pdo, $feed)
     if ($feed->error()) {
         $mail_text = "";
         foreach ($feed->error() as $key => $error) {
-            $mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+            $mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . ": " . $error . "\n";
         }
         $send = sendMail($rge_config, $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
         if (!$send) {
