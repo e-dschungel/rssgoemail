@@ -44,9 +44,8 @@ function sendMail($rge_config, $subject, $body)
                     echo("Invalid config entry for emailBackend {$rge_config['emailBackend']}\n");
         }
 
-        //Recipients
+        //From Address
         $mail->setFrom($rge_config['emailFrom']);
-        $mail->addAddress($rge_config['emailTo']);
 
         // Content
         $mail->isHTML(false);
@@ -54,7 +53,15 @@ function sendMail($rge_config, $subject, $body)
         $mail->Body    = $body;
         $mail->CharSet = 'utf-8';
 
-        $mail->send();
+        //handle multiple recepients, send one mail per recepient
+        $addresses = explode(',', $rge_config['emailTo']);
+        foreach ($addresses as $address) {
+            $mail->clearAddresses(); //
+            if (!$mail->AddAddress(trim($address))) {
+                echo("Address $address was already added!\n");
+            }
+            $mail->send();
+        }
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}\n";
         return false;
