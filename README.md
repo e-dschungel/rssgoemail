@@ -159,3 +159,11 @@ It uses [SimplePie](https://github.com/simplepie/simplepie) for RSS handling, [P
 
 ###  Version 0.5.1
 * fix minimal PHP Version, was PHP 8.2 in 0.5.0 instead of 8.1
+
+###  Version 0.5.2
+* fix sending to multiple recepients
+* add error message
+* update PHPMailer to 6.9.3
+* update Symfony/Cache to 6.4.19
+* update SimplePie to 1.8.1
+* update dev dependencies
