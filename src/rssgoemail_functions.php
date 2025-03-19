@@ -44,9 +44,8 @@ function sendMail($rge_config, $subject, $body)
                     echo("Invalid config entry for emailBackend {$rge_config['emailBackend']}\n");
         }
 
-        //Recipients
+        //From Address
         $mail->setFrom($rge_config['emailFrom']);
-        $mail->addAddress($rge_config['emailTo']);
 
         // Content
         $mail->isHTML($rge_config['emailHTML']);
@@ -54,7 +53,15 @@ function sendMail($rge_config, $subject, $body)
         $mail->Body    = $body;
         $mail->CharSet = 'utf-8';
 
-        $mail->send();
+        //handle multiple recepients, send one mail per recepient
+        $addresses = explode(',', $rge_config['emailTo']);
+        foreach ($addresses as $address) {
+            $mail->clearAddresses(); //
+            if (!$mail->AddAddress(trim($address))) {
+                echo("Address $address was already added!\n");
+            }
+            $mail->send();
+        }
     } catch (Exception $e) {
         echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}\n";
         return false;
@@ -260,7 +267,7 @@ function notifySummary($rge_config, $pdo, $feed)
 
     if ($feed->error()) {
         foreach ($feed->error() as $key => $error) {
-            $accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+            $accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . ": " . $error . "\n";
         }
     }
 
@@ -303,7 +310,7 @@ function notifyPerItem($rge_config, $pdo, $feed)
     if ($feed->error()) {
         $mail_text = "";
         foreach ($feed->error() as $key => $error) {
-            $mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . "\n";
+            $mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . ": " . $error . "\n";
         }
         $send = sendMail($rge_config, $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
         if (!$send) {
