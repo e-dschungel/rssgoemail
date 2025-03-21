@@ -233,7 +233,7 @@ function performReplacements($rge_config, $text, $item)
         "##FEED_DESCRIPTION##" => ($item->get_feed()) ? $item->get_feed()->get_description() : "",
         "##FEED_LANGUAGE##" => ($item->get_feed()) ? $item->get_feed()->get_language() : "",
         "##FEED_LINK##" => ($item->get_feed()) ? $item->get_feed()->get_link() : "",
-        "##FEED_TITLE##" => decodeHTMLtoUTF(($item->get_feed()) ? $item->get_feed()->get_title() : ""),
+        "##FEED_TITLE##" => $rge_config['emailHTML'] ? decodeHTMLtoUTF(($item->get_feed()) ? $item->get_feed()->get_title() : "") : (($item->get_feed()) ? $item->get_feed()->get_title() : ""),
         "##ITEM_AUTHOR_EMAIL##" => ($item->get_author()) ? $item->get_author()->get_email() : "",
         "##ITEM_AUTHOR_LINK##" => ($item->get_author()) ? $item->get_author()->get_link() : "",
         "##ITEM_AUTHOR_NAME##" => ($item->get_author()) ? $item->get_author()->get_name() : "",
@@ -243,7 +243,7 @@ function performReplacements($rge_config, $text, $item)
         "##ITEM_DESCRIPTION##" => $item->get_description(false),
         "##ITEM_ENCLOSURE_LINK##" => ($item->get_enclosure()) ? $item->get_enclosure()->get_link() : "",
         "##ITEM_LINK##" => $item->get_link(),
-        "##ITEM_TITLE##" => decodeHTMLtoUTF($item->get_title()),
+        "##ITEM_TITLE##" => $rge_config['emailHTML'] ? decodeHTMLtoUTF($item->get_title()) : $item->get_title(),
     );
     return strtr($text, $replacements);
 }
