@@ -1,7 +1,7 @@
 {
     "require": {
-        "simplepie/simplepie": "^1.7",
-        "phpmailer/phpmailer": "^6.2",
+        "simplepie/simplepie": "^1.9",
+        "phpmailer/phpmailer": "^7.0",
         "ext-mbstring": "*",
         "php": "*",
         "symfony/cache": "^6.4",
