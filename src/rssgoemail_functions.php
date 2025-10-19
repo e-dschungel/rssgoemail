@@ -249,32 +249,66 @@ function performReplacements($rge_config, $text, $item)
 }
 
 /**
+* Create feed array of SimplePie objects
+*
+* @param $rge_config rssgoemail config
+*
+* @return array of SimplePie objects
+*/
+function createFeedArray($rge_config)
+{
+    $psr6Cache = new Symfony\Component\Cache\Adapter\FilesystemAdapter(
+        $namespace = '',
+        $defaultLifetime = $rge_config['cacheTime'],
+        $directory = $rge_config['cacheDir']
+    );
+    $psr16Cache = new Symfony\Component\Cache\Psr16Cache($psr6Cache);
+
+    $feed = array();
+
+    foreach ($rge_config['feedUrls'] as $feedUrl) {
+        // Call SimplePie
+        $curFeed = new \SimplePie\SimplePie();
+        $curFeed->set_feed_url($feedUrl);
+        $curFeed->set_cache($psr16Cache);
+
+        // Init feed
+        $curFeed->init();
+
+        // Make sure the page is being served with the UTF-8 headers.
+        $curFeed->handle_content_type();
+
+        $feed[] = $curFeed;
+    }
+    return $feed;
+}
+
+
+/**
 * Sends a RSS summary with all new items in one mails, feed errors are sent as part of that mail
 *
 * @param $rge_config rssgoemail config,
 * @param $pdo PDO variable
-* @param $feed feeds to check
+* @param $feedArray array of feeds (SimplePie objects) to check
 *
 * @return void
 */
-function notifySummary($rge_config, $pdo, $feed)
+function notifySummary($rge_config, $pdo, $feedArray)
 {
-
-    $items = $feed->get_items();
-
     $accumulatedText = '';
     $accumulatedGuid = array();
 
-    if ($feed->error()) {
-        foreach ($feed->error() as $key => $error) {
-            $accumulatedText .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . ": " . $error . "\n";
+    foreach ($feedArray as $feed) {
+        if ($feed->error()) {
+            $accumulatedText .= $rge_config['errorInFeed'] . " " . $feed->subscribe_url(true) . ": "
+            . $feed->error() . "\n";
         }
     }
 
+    $items = SimplePie::merge_items($feedArray);
+
     foreach ($items as $item) {
         $guid = $item->get_id(true);
-
-
 
         // if was send before-> skip
         if (wasGUIDSent($rge_config, $pdo, $guid)) {
@@ -298,25 +332,27 @@ function notifySummary($rge_config, $pdo, $feed)
 *
 * @param $rge_config rssgoemail config,
 * @param $pdo PDO variable
-* @param $feed feeds to check
+* @param $feedArray array of feeds (SimplePie objects) to check
 *
 * @return void
 */
-function notifyPerItem($rge_config, $pdo, $feed)
+function notifyPerItem($rge_config, $pdo, $feedArray)
 {
-
-    $items = $feed->get_items();
-
-    if ($feed->error()) {
-        $mail_text = "";
-        foreach ($feed->error() as $key => $error) {
-            $mail_text .= $rge_config['errorInFeed'] . " " . $rge_config['feedUrls'][$key] . ": " . $error . "\n";
+    $mail_text = "";
+    foreach ($feedArray as $feed) {
+        if ($feed->error()) {
+            $mail_text .= $rge_config['errorInFeed'] . " " . $feed->subscribe_url(true) . ": "
+            . $feed->error() . "\n";
         }
+    }
+    if (strlen($mail_text > 0)) {
         $send = sendMail($rge_config, $rge_config['emailSubjectFeedErrorPerItem'], $mail_text);
         if (!$send) {
             die("Email sending failed");
         }
     }
+
+    $items = SimplePie::merge_items($feedArray);
 
     foreach ($items as $item) {
         $guid = $item->get_id(true);

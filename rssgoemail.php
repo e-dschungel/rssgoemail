@@ -46,32 +46,14 @@ $opt = [
 $dsn = "mysql:host={$rge_config['dbHost']};dbname={$rge_config['dbBase']};charset=$charset";
 $pdo = new PDO($dsn, $rge_config['dbUser'], $rge_config['dbPass'], $opt);
 
-$psr6Cache = new Symfony\Component\Cache\Adapter\FilesystemAdapter(
-    $namespace = '',
-    $defaultLifetime = $rge_config['cacheTime'],
-    $directory = $rge_config['cacheDir']
-);
-
-$psr16Cache = new Symfony\Component\Cache\Psr16Cache($psr6Cache);
-
-
-// Call SimplePie
-$feed = new \SimplePie\SimplePie();
-$feed->set_feed_url($rge_config['feedUrls']);
-$feed->set_cache($psr16Cache);
-
-// Init feed
-$feed->init();
-
-// Make sure the page is being served with the UTF-8 headers.
-$feed->handle_content_type();
+$feedArray = createFeedArray($rge_config);
 
 switch (strtolower($rge_config['notificationType'])) {
     case "peritem":
-        notifyPerItem($rge_config, $pdo, $feed);
+        notifyPerItem($rge_config, $pdo, $feedArray);
         break;
     case "summary":
-        notifySummary($rge_config, $pdo, $feed);
+        notifySummary($rge_config, $pdo, $feedArray);
         break;
     default:
         die("Invalid config entry for notificationType {$rge_config['notificationType']}");
